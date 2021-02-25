@@ -1,6 +1,4 @@
-package com.codepath.yutinggan.flixster;
-
-import androidx.appcompat.app.AppCompatActivity;
+package WatchTogether.flixster;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +7,9 @@ import android.widget.TextView;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.codepath.yutinggan.flixster.models.Movie;
+import flixster.R;
+
+import WatchTogether.flixster.models.Movie;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;

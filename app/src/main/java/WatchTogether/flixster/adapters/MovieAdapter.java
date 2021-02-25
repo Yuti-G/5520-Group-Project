@@ -1,4 +1,4 @@
-package com.codepath.yutinggan.flixster.adapters;
+package WatchTogether.flixster.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.codepath.yutinggan.flixster.DetailActivity;
-import com.codepath.yutinggan.flixster.R;
-import com.codepath.yutinggan.flixster.models.Movie;
+import WatchTogether.flixster.DetailActivity;
+import flixster.R;
+import WatchTogether.flixster.models.Movie;
 
 import org.parceler.Parcels;
 

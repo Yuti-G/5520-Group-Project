@@ -1,4 +1,4 @@
-package com.codepath.yutinggan.flixster.models;
+package WatchTogether.flixster.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;

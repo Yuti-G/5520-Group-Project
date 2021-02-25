@@ -1,4 +1,4 @@
-package com.codepath.yutinggan.flixster;
+package WatchTogether.flixster;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,8 +9,10 @@ import android.util.Log;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import com.codepath.yutinggan.flixster.adapters.MovieAdapter;
-import com.codepath.yutinggan.flixster.models.Movie;
+import flixster.R;
+
+import WatchTogether.flixster.adapters.MovieAdapter;
+import WatchTogether.flixster.models.Movie;
 import com.facebook.stetho.common.ArrayListAccumulator;
 
 import org.json.JSONArray;
