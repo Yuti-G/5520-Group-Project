@@ -15,6 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="0dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:padding="5dp" />
 
 </RelativeLayout>
