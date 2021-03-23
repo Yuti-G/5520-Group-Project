@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "544785555120",
+    "project_id": "watch-together-37d2b",
+    "storage_bucket": "watch-together-37d2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544785555120:android:5d42870ce7aac008e4a575",
+        "android_client_info": {
+          "package_name": "com.codepath.yutinggan.flixster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "544785555120-66euobm941eookdslkddg21ppjv5g700.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLXiAyz82kbNiKVJU6dVXE07YDNRm8j-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "544785555120-66euobm941eookdslkddg21ppjv5g700.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
