@@ -47,5 +47,8 @@ dependencies {
     annotationProcessor 'org.parceler:parceler:1.1.12'
 
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
     implementation 'com.google.firebase:firebase-analytics'
 }

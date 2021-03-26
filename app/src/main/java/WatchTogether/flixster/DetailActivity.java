@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
-import flixster.R;
+import com.codepath.yutinggan.flixster.R;
 
 import WatchTogether.flixster.models.Movie;
 import com.google.android.youtube.player.YouTubeBaseActivity;

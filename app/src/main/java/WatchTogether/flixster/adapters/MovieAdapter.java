@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import WatchTogether.flixster.DetailActivity;
-import flixster.R;
+import com.codepath.yutinggan.flixster.R;
 import WatchTogether.flixster.models.Movie;
 
 import org.parceler.Parcels;

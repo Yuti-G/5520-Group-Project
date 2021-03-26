@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "544785555120",
+    "firebase_url": "https://watch-together-37d2b-default-rtdb.firebaseio.com",
     "project_id": "watch-together-37d2b",
     "storage_bucket": "watch-together-37d2b.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "544785555120-rb2ktaspc444vq9dcvp4jlthtt4430pd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.codepath.yutinggan.flixster",
+            "certificate_hash": "1111111111111111111111111111111111111111"
+          }
+        },
         {
           "client_id": "544785555120-66euobm941eookdslkddg21ppjv5g700.apps.googleusercontent.com",
           "client_type": 3
