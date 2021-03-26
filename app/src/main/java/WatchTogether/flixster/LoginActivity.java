@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -27,7 +29,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private final int REQUEST_CODE = 5520;
-    private final String TAG = "LoginActivity";
+    public static final String TAG = "LoginActivity";
     private FirebaseAuth mAuth;
 
     @Override
@@ -57,10 +59,45 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                String email = ((EditText) findViewById(R.id.etUsername)).getText().toString();
+                String password = ((EditText) findViewById(R.id.etPassword)).getText().toString();
+                SignIn(email, password);
+            }
+        });
+
+        findViewById(R.id.btnSignup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
             }
         });
+    }
+
+    private void SignIn(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            assert user != null;
+                            intent.putExtra("email", user.getEmail());
+                            startActivity(intent);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // ...
+                    }
+                });
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
@@ -74,6 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            assert user != null;
+                            intent.putExtra("email", user.getEmail());
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -115,6 +154,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                assert account != null;
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getEmail());
                 firebaseAuthWithGoogle(account.getIdToken());

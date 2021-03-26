@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Headers;
 
@@ -79,12 +81,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        String email = getIntent().getExtras().getString("email");
+        Toast.makeText(MainActivity.this, "Signed in with " + email,
+                Toast.LENGTH_SHORT).show();
+
         findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
+                Log.v(TAG, Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
                 FirebaseAuth.getInstance().signOut();
+                Toast.makeText(getApplicationContext(), "Successfully Signed Out",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
