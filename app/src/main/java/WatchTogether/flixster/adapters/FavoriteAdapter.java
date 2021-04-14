@@ -5,22 +5,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
+
 import com.bumptech.glide.Glide;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.view.LayoutInflater;
 import java.util.List;
 
-import com.bumptech.glide.Glide;
-import com.codepath.yutinggan.flixster.FavoriteActivity;
 import com.codepath.yutinggan.flixster.R;
 
-import WatchTogether.flixster.ProfileActivity;
 import WatchTogether.flixster.models.Movie;
 
 public class FavoriteAdapter extends Adapter<FavoriteAdapter.ViewHolder>{
