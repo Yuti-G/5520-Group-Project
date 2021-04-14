@@ -81,11 +81,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        String email = getIntent().getExtras().getString("email");
-        Toast.makeText(MainActivity.this, "Signed in with " + email,
-                Toast.LENGTH_SHORT).show();
+//        String email = getIntent().getExtras().getString("email");
+//        Toast.makeText(MainActivity.this, "Signed in with " + email,
+//                Toast.LENGTH_SHORT).show();
 
-        findViewById(R.id.floatingActionButton).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.sign_out_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -97,5 +97,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.profile_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
