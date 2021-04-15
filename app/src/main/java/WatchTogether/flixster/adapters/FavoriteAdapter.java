@@ -21,11 +21,11 @@ import WatchTogether.flixster.models.Movie;
 public class FavoriteAdapter extends Adapter<FavoriteAdapter.ViewHolder>{
     private List<Movie> favorite_list;
     Context context;
-    ImageView imageView;
     View.OnClickListener onClickListener;
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
         public ViewHolder(View view) {
             super(view);
             imageView = (ImageView)view.findViewById(R.id.iv_poster);
@@ -54,7 +54,7 @@ public class FavoriteAdapter extends Adapter<FavoriteAdapter.ViewHolder>{
         // Recycler view with the list items
         Movie movie = favorite_list.get(position);
         String imageUrl = movie.getPosterPath();
-        Glide.with(context).load(imageUrl).into(imageView);
+        Glide.with(context).load(imageUrl).into(holder.imageView);
     }
 
     @Override

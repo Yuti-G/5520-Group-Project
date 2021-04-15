@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
@@ -59,10 +60,20 @@ public class ProfileActivity extends AppCompatActivity {
 
     ImageView imgProfile;
 
+    TextView userID, followers, following;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_acticity);
+
+        //TODO: set up basic info
+        userID = (TextView) findViewById(R.id.profile_id);
+        //userID.setText();
+        followers = (TextView) findViewById(R.id.followers_num);
+        //followers.setText();
+        following = (TextView) findViewById(R.id.following_num);
+        //following.setText();
 
         imgProfile = (ImageView) findViewById(R.id.iv_profile);
         loadProfileDefault();
@@ -70,14 +81,12 @@ public class ProfileActivity extends AppCompatActivity {
         findViewById(R.id.ic_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "click!!!!!!");
                 onProfileImageClick();
             }
         });
         findViewById(R.id.iv_profile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "click!!!!!!");
                 onProfileImageClick();
             }
         });

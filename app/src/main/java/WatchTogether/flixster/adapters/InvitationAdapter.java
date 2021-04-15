@@ -22,12 +22,12 @@ import WatchTogether.flixster.models.Movie;
 public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
     private List<Invitation> invitation_list;
     Context context;
-    ImageView imageView;
-    TextView textView;
     View.OnClickListener onClickListener;
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        TextView textView;
         public ViewHolder(View view) {
             super(view);
             imageView = (ImageView)view.findViewById(R.id.iv_invitation);
@@ -62,7 +62,7 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
             text = "invites you to watch" + invitation.getMovie().getTitle() + "together!";
         else
             text = "invites you to watch xxx together!";
-        textView.setText(text);
+        holder.textView.setText(text);
         // TODO get inviteFrom user's icon and attach image to imageView
         //String inviteFromProfileImageURL =
         //Glide.with(context).load(inviteFromProfileImageURL).into(imageView);

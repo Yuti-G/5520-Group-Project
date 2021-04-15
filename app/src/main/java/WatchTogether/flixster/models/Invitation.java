@@ -7,7 +7,7 @@ import org.parceler.Parcel;
 @Parcel
 public class Invitation {
     private int invitationId;
-    private LocalDateTime dateTime;
+    private String dateTime;
     private String location;
     private Movie movie;
     private String inviteFrom;
@@ -19,7 +19,7 @@ public class Invitation {
     public Invitation() {}
 
 
-    public Invitation(int invitationId, LocalDateTime dateTime, String location, Movie movie,
+    public Invitation(int invitationId, String dateTime, String location, Movie movie,
                       String inviteFrom, String inviteTo, String message) {
         this.invitationId = invitationId;
         this.dateTime = dateTime;
@@ -30,6 +30,7 @@ public class Invitation {
         this.message = message;
     }
 
+    //TODO: Add codes to update database for all setters and accept/decline()
 
     public int getInvitationId() {
         return invitationId;
@@ -39,11 +40,11 @@ public class Invitation {
         this.invitationId = invitationId;
     }
 
-    public LocalDateTime getDateTime() {
+    public String getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(String dateTime) {
         this.dateTime = dateTime;
     }
 

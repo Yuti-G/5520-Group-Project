@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Flixster">
-        <activity android:name="WatchTogether.flixster.ImagePickerActivity"></activity>
+        <activity android:name="WatchTogether.flixster.ImagePickerActivity" />
         <activity android:name="WatchTogether.flixster.InvitationActivity" />
         <activity android:name="WatchTogether.flixster.FavoriteActivity" />
         <activity android:name="WatchTogether.flixster.SignUpActivity" />
