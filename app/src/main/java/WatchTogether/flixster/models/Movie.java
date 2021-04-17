@@ -1,5 +1,7 @@
 package WatchTogether.flixster.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,5 +63,14 @@ public class Movie {
 
     public int getMovieId() {
         return movieId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof Movie)) return false;
+        Movie o = (Movie) obj;
+        return o.movieId == this.movieId;
     }
 }

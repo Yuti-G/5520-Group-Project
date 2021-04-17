@@ -97,8 +97,8 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
         //String inviteToProfileImageURL =
         //Glide.with(context).load(inviteFromProfileImageURL).into(ivProfileFrom);
         //Glide.with(context).load(inviteToProfileImageURL).into(ivProfileTo);
-        holder.tvUserFrom.setText(invitation.getInviteFrom());
-        holder.tvUserTo.setText(invitation.getInviteTo());
+        holder.tvUserFrom.setText(invitation.getInviteFrom().getName());
+        holder.tvUserTo.setText(invitation.getInviteTo().getName());
         if (invitation.getMovie() != null)
             holder.bind(invitation.getMovie());
         holder.tvDateTime.setText(invitation.getDateTime());

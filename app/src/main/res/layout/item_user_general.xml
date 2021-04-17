@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/invitation_general_container"
+    android:id="@+id/user_container"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:layout_margin="10dp"
-    android:background="@drawable/border">
+    android:layout_marginTop="10dp"
+    android:background="@drawable/border_grey">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/roundCardView"
@@ -22,23 +22,21 @@
         app:cardCornerRadius="20dp">
 
         <ImageView
-            android:id="@+id/iv_invitation"
+            android:id="@+id/iv_user"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/baseline_account_circle_black_48"/>
+            android:src="@drawable/baseline_account_circle_black_48" />
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tv_display"
+        android:id="@+id/tv_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
         android:layout_toEndOf="@+id/roundCardView"
-        android:text="TextView"
-        android:textSize="20dp"
-        android:textColor="@color/black"
-        tools:text="invites you to watch xxx together" />
+        android:text="UserID"
+        android:textSize="20sp" />
 </RelativeLayout>

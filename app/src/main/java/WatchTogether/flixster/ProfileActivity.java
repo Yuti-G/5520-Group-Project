@@ -42,7 +42,6 @@ import WatchTogether.flixster.adapters.FavoriteAdapter;
 import WatchTogether.flixster.adapters.InvitationAdapter;
 import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
-import butterknife.OnClick;
 import okhttp3.Headers;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -65,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_acticity);
+        setContentView(R.layout.activity_profile_activity);
 
         //TODO: set up basic info
         userID = (TextView) findViewById(R.id.profile_id);

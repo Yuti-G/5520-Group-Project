@@ -1,6 +1,6 @@
 package WatchTogether.flixster.models;
 
-import java.time.LocalDateTime;
+import WatchTogether.flixster.models.User;
 
 import org.parceler.Parcel;
 
@@ -10,8 +10,8 @@ public class Invitation {
     private String dateTime;
     private String location;
     private Movie movie;
-    private String inviteFrom;
-    private String inviteTo;
+    private User inviteFrom;
+    private User inviteTo;
     private String message;
     Boolean accepted;
 
@@ -20,7 +20,7 @@ public class Invitation {
 
 
     public Invitation(int invitationId, String dateTime, String location, Movie movie,
-                      String inviteFrom, String inviteTo, String message) {
+                      User inviteFrom, User inviteTo, String message) {
         this.invitationId = invitationId;
         this.dateTime = dateTime;
         this.location = location;
@@ -64,19 +64,19 @@ public class Invitation {
         this.movie = movie;
     }
 
-    public String getInviteFrom() {
+    public User getInviteFrom() {
         return inviteFrom;
     }
 
-    public void setInviteFrom(String inviteFrom) {
+    public void setInviteFrom(User inviteFrom) {
         this.inviteFrom = inviteFrom;
     }
 
-    public String getInviteTo() {
+    public User getInviteTo() {
         return inviteTo;
     }
 
-    public void setInviteTo(String inviteTo) {
+    public void setInviteTo(User inviteTo) {
         this.inviteTo = inviteTo;
     }
 
