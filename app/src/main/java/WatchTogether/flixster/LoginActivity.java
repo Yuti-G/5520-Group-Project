@@ -61,6 +61,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = ((EditText) findViewById(R.id.etUsername)).getText().toString();
                 String password = ((EditText) findViewById(R.id.etPassword)).getText().toString();
+                if (!(email.length() > 0 && password.length() > 0)) {
+                    Toast.makeText(LoginActivity.this, "Please complete all missing fields.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 SignIn(email, password);
             }
         });

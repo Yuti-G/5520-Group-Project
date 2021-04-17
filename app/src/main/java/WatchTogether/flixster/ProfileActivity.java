@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -68,7 +69,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         //TODO: set up basic info
         userID = (TextView) findViewById(R.id.profile_id);
-        //userID.setText();
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        userID.setText(email.split("@")[0]);
         followers = (TextView) findViewById(R.id.followers_num);
         //followers.setText();
         following = (TextView) findViewById(R.id.following_num);

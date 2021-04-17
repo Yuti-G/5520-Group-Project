@@ -36,6 +36,11 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = ((EditText) findViewById(R.id.etEmail)).getText().toString();
                 String password1 = ((EditText) findViewById(R.id.etPassword1)).getText().toString();
                 String password2 = ((EditText) findViewById(R.id.etPassword2)).getText().toString();
+                if (!(email.length() > 0 && password1.length() > 0 && password2.length() > 0)) {
+                    Toast.makeText(SignUpActivity.this, "Please complete all missing fields.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (!password1.equals(password2)) {
                     Toast.makeText(SignUpActivity.this, "Password does not match.",
                             Toast.LENGTH_SHORT).show();
