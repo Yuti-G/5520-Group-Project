@@ -50,6 +50,7 @@ import WatchTogether.flixster.adapters.FavoriteAdapter;
 import WatchTogether.flixster.adapters.InvitationAdapter;
 import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
+import WatchTogether.flixster.models.User;
 import okhttp3.Headers;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -103,8 +104,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        invitationList = new ArrayList<>();
         rvInvitations = (RecyclerView) findViewById(R.id.rv_invitations_general);
-        AddItemsToInvitationList();
+        rvInvitations.setLayoutManager(new LinearLayoutManager(this));
         invitationAdapter = new InvitationAdapter(this, invitationList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,9 +114,41 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        invitationAdapter.notifyDataSetChanged();
-        rvInvitations.setLayoutManager(new LinearLayoutManager(this));
         rvInvitations.setAdapter(invitationAdapter);
+        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                ArrayList<HashMap> invitationMapList = (ArrayList) documentSnapshot.get("invitations");
+                for (int i = 0; i < invitationMapList.size(); i++) {
+                    HashMap invitationMap = invitationMapList.get(i);
+                    long invitationId = (long) invitationMap.get("invitationId");
+                    String dateTime = (String) invitationMap.get("dateTime");
+                    String location = (String) invitationMap.get("location");
+                    HashMap userFrom = (HashMap) invitationMap.get("inviteFrom");
+                    User inviteFrom = new User((String) userFrom.get("userId"), (String) userFrom.get("name"), null);
+                    HashMap userTo = (HashMap) invitationMap.get("inviteTo");
+                    User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null);
+                    String message = (String) invitationMap.get("message");
+                    HashMap m = (HashMap) invitationMap.get("movie");
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("backdrop_path", m.get("backdropPath"));
+                        jsonObject.put("poster_path", m.get("posterPath"));
+                        jsonObject.put("title", m.get("title"));
+                        jsonObject.put("overview", m.get("overview"));
+                        jsonObject.put("id", m.get("movieId"));
+                        jsonObject.put("vote_average", m.get("rating"));
+                        Movie movie = new Movie(jsonObject);
+                        Invitation invitation = new Invitation((int) invitationId, dateTime, location, movie, inviteFrom, inviteTo, message);
+                        invitationList.add(invitation);
+                        Log.v(TAG, String.valueOf(invitationList.size()));
+                        invitationAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         rvFavorite = (RecyclerView) findViewById(R.id.rv_favorite_general);
         AddItemsToFavoriteList();
@@ -156,19 +190,6 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    // Function to add items in RecyclerView.
-    public void AddItemsToInvitationList()
-    {
-        // Adding items to ArrayList
-        invitationList = new ArrayList<>();
-
-        // TODO: change the followings to fetch user's invitations list data
-        invitationList.add(new Invitation());
-        invitationList.add(new Invitation());
-        invitationList.add(new Invitation());
-        invitationList.add(new Invitation());
     }
 
     private void loadProfile(String url) {

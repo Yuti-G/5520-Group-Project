@@ -29,6 +29,10 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
 import com.facebook.stetho.common.ArrayListAccumulator;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +57,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
     Context context;
     int day, month, year, hour, minute;
     TextView tvDateTime;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -113,6 +119,19 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
     private void showInviteDialog(User inviteTo) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.item_send_invitation, null);
+        ImageView ivInviteFrom = v.findViewById(R.id.iv_invitation_from);
+        TextView tvInviteFrom = v.findViewById(R.id.tv_user_id_from);
+        ImageView ivInviteTo = v.findViewById(R.id.iv_invitation_to);
+        TextView tvInviteTo = v.findViewById(R.id.tv_user_id_to);
+        tvInviteTo.setText(inviteTo.getName().split("@")[0]);
+        ImageView ivPoster = v.findViewById(R.id.iv_invitation_poster);
+        TextView tvTitle = v.findViewById(R.id.tv_movie_title);
+        TextView tvOverview = v.findViewById(R.id.tvOverview);
+        TextView tvLocation = v.findViewById(R.id.text_location);
+        TextView tvMessage = v.findViewById(R.id.text_message);
+        tvDateTime = v.findViewById(R.id.text_datetime);
+        Button btnSelect = v.findViewById(R.id.btn_datetime);
+        Movie movie = DetailActivity.getMovie();
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle("Send a new invitation")
                 .setView(v)
@@ -127,59 +146,75 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                     public void onClick(DialogInterface dialog, int which) {
                         //TODO: send data to firebase
                         // Add a Toast when succeeds and send notification to inviteTo user
+                        User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null);
+                        Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString());
+                        db.collection("users").document(inviteTo.getName())
+                                .update("invitations", FieldValue.arrayUnion(invitation))
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                });
                         dialog.cancel();
                     }
                 })
                 .create();
-        ImageView ivInviteFrom = v.findViewById(R.id.iv_invitation_from);
-        TextView tvInviteFrom = v.findViewById(R.id.tv_user_id_from);
-        ImageView ivInviteTo = v.findViewById(R.id.iv_invitation_to);
-        TextView tvInviteTo = v.findViewById(R.id.tv_user_id_to);
-        ImageView ivPoster = v.findViewById(R.id.iv_invitation_poster);
-        TextView tvTitle = v.findViewById(R.id.tv_movie_title);
-        TextView tvOverview = v.findViewById(R.id.tvOverview);
-        tvDateTime = v.findViewById(R.id.text_datetime);
-        Button btnSelect = v.findViewById(R.id.btn_datetime);
-        //TODO: set inviteFrom and inviteTo
-        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-        List<Movie> movies = new ArrayListAccumulator<>();
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int i, Headers headers, JSON json) {
 
-                Log.d(TAG, "onSuccess");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONArray results = jsonObject.getJSONArray("results");
-                    Log.i(TAG, "Results: " + results.toString());
-                    // TODO: change the movie to the current movie
-                    movies.addAll(Movie.fromJsonArray(results));
-                    Movie movie = movies.get(0);
-
-                    tvTitle.setText(movie.getTitle());
-                    tvOverview.setText(movie.getOverview());
-                    String imageUrl = movie.getPosterPath();
-                    // then imgageURL = backdrop image, else = poster image
-                    Glide.with(context).load(imageUrl).into(ivPoster);
-                    tvOverview.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //2. navigate to a new activity on tap
-                            Intent i = new Intent(context, DetailActivity.class);
-                            i.putExtra("movie", Parcels.wrap(movie));
-                            context.startActivity(i);
-                        }
-                    });
-                } catch (JSONException e) {
-                    Log.e(TAG, "Hit json exception", e);
-                }
-            }
+        tvTitle.setText(movie.getTitle());
+        tvOverview.setText(movie.getOverview());
+        String imageUrl = movie.getPosterPath();
+        // then imgageURL = backdrop image, else = poster image
+        Glide.with(context).load(imageUrl).into(ivPoster);
+        tvOverview.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-                Log.d(TAG, "onFail");
+            public void onClick(View v) {
+                //2. navigate to a new activity on tap
+                Intent i = new Intent(context, DetailActivity.class);
+                i.putExtra("movie", Parcels.wrap(movie));
+                context.startActivity(i);
             }
         });
+
+//        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+//        //List<Movie> movies = new ArrayListAccumulator<>();
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int i, Headers headers, JSON json) {
+//
+//                Log.d(TAG, "onSuccess");
+//                JSONObject jsonObject = json.jsonObject;
+//                try {
+//                    JSONArray results = jsonObject.getJSONArray("results");
+//                    Log.i(TAG, "Results: " + results.toString());
+//                    // TODO: change the movie to the current movie
+//                    //movies.addAll(Movie.fromJsonArray(results));
+//                    Movie movie = DetailActivity.getMovie();
+//
+//                    tvTitle.setText(movie.getTitle());
+//                    tvOverview.setText(movie.getOverview());
+//                    String imageUrl = movie.getPosterPath();
+//                    // then imgageURL = backdrop image, else = poster image
+//                    Glide.with(context).load(imageUrl).into(ivPoster);
+//                    tvOverview.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            //2. navigate to a new activity on tap
+//                            Intent i = new Intent(context, DetailActivity.class);
+//                            i.putExtra("movie", Parcels.wrap(movie));
+//                            context.startActivity(i);
+//                        }
+//                    });
+//                } catch (JSONException e) {
+//                    Log.e(TAG, "Hit json exception", e);
+//                }
+//            }
+//            @Override
+//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
+//                Log.d(TAG, "onFail");
+//            }
+//        });
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();

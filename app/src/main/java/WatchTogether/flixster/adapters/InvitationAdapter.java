@@ -59,7 +59,7 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
         Invitation invitation = invitation_list.get(position);
         String text;
         if (invitation.getMovie() != null)
-            text = "invites you to watch" + invitation.getMovie().getTitle() + "together!";
+            text = "invites you to watch" + invitation.getMovie().getTitle() + " together!";
         else
             text = "invites you to watch xxx together!";
         holder.textView.setText(text);

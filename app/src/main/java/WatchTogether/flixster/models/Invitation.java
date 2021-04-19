@@ -28,6 +28,7 @@ public class Invitation {
         this.inviteFrom = inviteFrom;
         this.inviteTo = inviteTo;
         this.message = message;
+        this.accepted = false;
     }
 
     //TODO: Add codes to update database for all setters and accept/decline()

@@ -31,11 +31,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="15dp"
+        android:text="Me"
         android:textColor="@color/black"
         android:textSize="15dp"
         app:layout_constraintStart_toEndOf="@+id/round_from"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="UserID" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/arrow"

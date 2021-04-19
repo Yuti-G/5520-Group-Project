@@ -64,7 +64,7 @@ public class DetailActivity extends YouTubeBaseActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    Movie movie;
+    static Movie movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +161,6 @@ public class DetailActivity extends YouTubeBaseActivity {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         Log.d(TAG, document.getId() + " => " + document.getData());
                         String email = document.getId();
-                        Log.v(TAG, email);
                         if (!email.equals(mAuth.getCurrentUser().getEmail())) {
                             String uid = (String) document.getData().get("uid");
                             userList.add(new User(uid, email, null));
@@ -189,5 +188,9 @@ public class DetailActivity extends YouTubeBaseActivity {
                 Log.d("DetailActivity", "onInitializationFailure");
             }
         });
+    }
+
+    public static Movie getMovie() {
+        return movie;
     }
 }
