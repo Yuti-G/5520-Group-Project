@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
@@ -55,7 +56,6 @@ public class FavoriteActivity extends AppCompatActivity {
         // Set a Layout Manager on the recycler view
         rvFavoriteMovies.setLayoutManager(new LinearLayoutManager(this));
 
-        //TODO: replace the following code to get favorite_list from database
         DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -73,49 +73,5 @@ public class FavoriteActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int i, Headers headers, JSON json) {
-//
-//                Log.d(TAG, "onSuccess");
-//                JSONObject jsonObject = json.jsonObject;
-//                try {
-//                    JSONArray results = jsonObject.getJSONArray("results");
-//                    Log.i(TAG, "Results: " + results.toString());
-//                    favorite_list.addAll(Movie.fromJsonArray(results));
-//                    movieAdapter.notifyDataSetChanged();
-//                    Log.i(TAG, "Movies: " + favorite_list.size());
-//                } catch (JSONException e) {
-//                    Log.e(TAG, "Hit json exception", e);
-//
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-//                Log.d(TAG, "onFail");
-//            }
-//        });
-
-        //Specify what action a specific gesture performs, in this case swiping right or left deletes the entry
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Toast.makeText(FavoriteActivity.this, "Remove a movie!", Toast.LENGTH_SHORT).show();
-                int position = viewHolder.getLayoutPosition();
-                // TODO: updated favorite list in database
-                favorite_list.remove(position);
-                movieAdapter.notifyItemRemoved(position);
-            }
-        });
-        itemTouchHelper.attachToRecyclerView(rvFavoriteMovies);
     }
 }

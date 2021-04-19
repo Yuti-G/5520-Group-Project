@@ -11,27 +11,23 @@ import java.util.List;
 
 @Parcel
 public class User {
-    private int userId;
+    private String userId;
     private String name;
     private Bitmap profileImg;
-    private List<Movie> favoriteList;
 
     public User() {}
 
-    public User(int userId, String name, Bitmap profileImg, List<Movie> favoriteList) {
+    public User(String userId, String name, Bitmap profileImg) {
         this.userId = userId;
         this.name = name;
         this.profileImg = profileImg;
-        this.favoriteList = favoriteList;
     }
 
-    //TODO: Add codes to update database for all setters and add/remove
-
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -51,19 +47,4 @@ public class User {
         this.profileImg = profileImg;
     }
 
-    public List<Movie> getFavoriteList() {
-        return favoriteList;
-    }
-
-    public void addMovieToFavoriteList(Movie movie) {
-        this.favoriteList.add(movie);
-    }
-
-    public void removeMovieFromFavoriteList(Movie movie) {
-        this.favoriteList.remove(movie);
-    }
-
-    public boolean likedMovie(Movie movie) {
-        return this.favoriteList.contains(movie);
-    }
 }

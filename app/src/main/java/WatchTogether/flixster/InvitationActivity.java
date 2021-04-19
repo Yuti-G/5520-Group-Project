@@ -61,22 +61,22 @@ public class InvitationActivity extends AppCompatActivity {
                     Log.i(TAG, "Results: " + results.toString());
                     movies.addAll(Movie.fromJsonArray(results));
                     Invitation i1 = new Invitation(1, "2021-04-14 05:24", "online", movies.get(0),
-                            new User(1, "Ann", null, new ArrayList<>()),
-                            new User(2, "Bob", null, new ArrayList<>()),
+                            new User("1", "Ann", null),
+                            new User("2", "Bob", null),
                             "Let's watch together");
                     i1.accept();
                     invitationList.add(i1);
                     invitationList.add(new Invitation(2, "2021-04-16 05:24", "online", movies.get(1),
-                            new User(1, "Ann", null, new ArrayList<>()),
-                            new User(2, "Bob", null, new ArrayList<>()),
+                            new User("1", "Ann", null),
+                            new User("2", "Bob", null),
                             "Let's watch together"));
                     invitationList.add(new Invitation(3, "2021-04-16 05:24", "online", movies.get(2),
-                            new User(1, "Ann", null, new ArrayList<>()),
-                            new User(2, "Bob", null, new ArrayList<>()),
+                            new User("1", "Ann", null),
+                            new User("2", "Bob", null),
                             "Let's watch together"));
                     invitationList.add(new Invitation(4, "2021-04-16 05:24", "online", movies.get(3),
-                            new User(1, "Ann", null, new ArrayList<>()),
-                            new User(2, "Bob", null, new ArrayList<>()),
+                            new User("1", "Ann", null),
+                            new User("2", "Bob", null),
                             "Let's watch together"));
                     invitationDetailAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {

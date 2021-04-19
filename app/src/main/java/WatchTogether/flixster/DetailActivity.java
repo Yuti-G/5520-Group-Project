@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,22 +18,29 @@ import com.codepath.yutinggan.flixster.R;
 import WatchTogether.flixster.adapters.UserAdapter;
 import WatchTogether.flixster.models.Movie;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import WatchTogether.flixster.models.User;
@@ -56,6 +64,7 @@ public class DetailActivity extends YouTubeBaseActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    Movie movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +78,7 @@ public class DetailActivity extends YouTubeBaseActivity {
         youTubePlayerView = findViewById(R.id.player);
         rvUserList = findViewById(R.id.rv_liked_users);
 
-        Movie movie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
+        movie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
         tvTitle.setText(movie.getTitle());
         tvOverview.setText(movie.getOverview());
         ratingBar.setRating((float)movie.getRating());
@@ -100,16 +109,12 @@ public class DetailActivity extends YouTubeBaseActivity {
             }
         });
 
-        //TODO: get data from database whether this user like this movie or not and set whether
-        // this favorite icon is filled or empty
-        // boolean liked = user.likedMovie(thismovie)
         DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 liked = ((ArrayList) documentSnapshot.get("movies")).contains(Long.valueOf(movie.getMovieId()));
                 if (liked) {
-                    Log.v(TAG, String.valueOf(liked));
                     btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
                 } else {
                     btFavorite.setImageResource(R.mipmap.ic_favorite);
@@ -121,7 +126,6 @@ public class DetailActivity extends YouTubeBaseActivity {
             public void onClick(View v) {
                 if (liked) {
                     btFavorite.setImageResource(R.mipmap.ic_favorite);
-                    //TODO: user.removeMovieFromFavoriteList(this movie)
                     userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -131,7 +135,6 @@ public class DetailActivity extends YouTubeBaseActivity {
                 }
                 else {
                     btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
-                    //TODO: user.addMovieToFavoriteList(this movie)
                     userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -145,12 +148,31 @@ public class DetailActivity extends YouTubeBaseActivity {
 
         // favorite user list
         userList = new ArrayList<>();
-
-        AddItemsToUsersList();
         UserAdapter userAdapter = new UserAdapter(this, userList);
-        userAdapter.notifyDataSetChanged();
         rvUserList.setLayoutManager(new LinearLayoutManager(this));
         rvUserList.setAdapter(userAdapter);
+
+        CollectionReference usersRef = db.collection("users");
+        Query q = usersRef.whereArrayContainsAny("movies", Arrays.asList(movie.getMovieId()));
+        q.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        String email = document.getId();
+                        Log.v(TAG, email);
+                        if (!email.equals(mAuth.getCurrentUser().getEmail())) {
+                            String uid = (String) document.getData().get("uid");
+                            userList.add(new User(uid, email, null));
+                            userAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 
     private void initializeYoutube(final String youtubeKey) {
@@ -167,15 +189,5 @@ public class DetailActivity extends YouTubeBaseActivity {
                 Log.d("DetailActivity", "onInitializationFailure");
             }
         });
-    }
-
-    private void AddItemsToUsersList() {
-        //TODO: get usersList from firebase, maybe need to add one more attribute to Movie class to
-        // storage this list
-        User u1 = new User(1, "Ann", null, new ArrayList<>());
-        User u2 = new User(2, "Bob", null, new ArrayList<>());
-
-        userList.add(u1);
-        userList.add(u2);
     }
 }

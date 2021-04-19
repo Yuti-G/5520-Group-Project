@@ -139,7 +139,6 @@ public class ProfileActivity extends AppCompatActivity {
         // Adding items to ArrayList
         favoriteList = new ArrayList<>();
 
-        // TODO: change the followings to fetch user's favorite movie list data
         DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -157,32 +156,6 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-//        String TAG = "ProfileActivity";
-//        AsyncHttpClient client = new AsyncHttpClient();
-//
-//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int i, Headers headers, JSON json) {
-//
-//                Log.d(TAG, "onSuccess");
-//                JSONObject jsonObject = json.jsonObject;
-//                try {
-//                    JSONArray results = jsonObject.getJSONArray("results");
-//                    Log.i(TAG, "Results: " + results.toString());
-//                    favoriteList.addAll(Movie.fromJsonArray(results));
-//                    favoriteAdapter.notifyDataSetChanged();
-//                } catch (JSONException e) {
-//                    Log.e(TAG, "Hit json exception", e);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-//                Log.d(TAG, "onFail");
-//            }
-//        });
     }
 
     // Function to add items in RecyclerView.
