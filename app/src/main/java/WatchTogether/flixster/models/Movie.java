@@ -65,6 +65,14 @@ public class Movie {
         return movieId;
     }
 
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

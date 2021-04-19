@@ -16,10 +16,17 @@ import com.codepath.yutinggan.flixster.R;
 
 import WatchTogether.flixster.adapters.UserAdapter;
 import WatchTogether.flixster.models.Movie;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +41,7 @@ import okhttp3.Headers;
 
 public class DetailActivity extends YouTubeBaseActivity {
 
+    public static final String TAG = "DetailActivity";
     public static final String YOUTUBE_API_KEY = "AIzaSyBlHhL9EqgJx0ZFIuzc5vn2yUAe96pZhs8";
     public static final String VIDEOS_URL = "https://api.themoviedb.org/3/movie/%d/videos?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
 
@@ -46,6 +54,9 @@ public class DetailActivity extends YouTubeBaseActivity {
     List<User> userList;
     boolean liked;
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,26 +68,6 @@ public class DetailActivity extends YouTubeBaseActivity {
         ratingBar = findViewById(R.id.ratingBar);
         youTubePlayerView = findViewById(R.id.player);
         rvUserList = findViewById(R.id.rv_liked_users);
-
-        //TODO: get data from database whether this user like this movie or not and set whether
-        // this favorite icon is filled or empty
-        // boolean liked = user.likedMovie(thismovie)
-        liked = false;
-        if (liked) btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
-        btFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (liked) {
-                    btFavorite.setImageResource(R.mipmap.ic_favorite);
-                    //TODO: user.removeMovieFromFavoriteList(this movie)
-                }
-                else {
-                    btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
-                    //TODO: user.addMovieToFavoriteList(this movie)
-                }
-                liked = !liked;
-            }
-        });
 
         Movie movie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
         tvTitle.setText(movie.getTitle());
@@ -106,6 +97,49 @@ public class DetailActivity extends YouTubeBaseActivity {
             @Override
             public void onFailure(int i, Headers headers, String s, Throwable throwable) {
 
+            }
+        });
+
+        //TODO: get data from database whether this user like this movie or not and set whether
+        // this favorite icon is filled or empty
+        // boolean liked = user.likedMovie(thismovie)
+        DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                liked = ((ArrayList) documentSnapshot.get("movies")).contains(Long.valueOf(movie.getMovieId()));
+                if (liked) {
+                    Log.v(TAG, String.valueOf(liked));
+                    btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
+                } else {
+                    btFavorite.setImageResource(R.mipmap.ic_favorite);
+                }
+            }
+        });
+        btFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (liked) {
+                    btFavorite.setImageResource(R.mipmap.ic_favorite);
+                    //TODO: user.removeMovieFromFavoriteList(this movie)
+                    userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            userRef.update("movies", FieldValue.arrayRemove(movie.getMovieId()));
+                        }
+                    });
+                }
+                else {
+                    btFavorite.setImageResource(R.mipmap.ic_favorite_filled);
+                    //TODO: user.addMovieToFavoriteList(this movie)
+                    userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            userRef.update("movies", FieldValue.arrayUnion(movie.getMovieId()));
+                        }
+                    });
+                }
+                liked = !liked;
             }
         });
 

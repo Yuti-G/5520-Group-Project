@@ -24,7 +24,13 @@ import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -37,6 +43,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import WatchTogether.flixster.adapters.FavoriteAdapter;
@@ -46,7 +53,7 @@ import WatchTogether.flixster.models.Movie;
 import okhttp3.Headers;
 
 public class ProfileActivity extends AppCompatActivity {
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "ProfileActivity";
     public static final int REQUEST_IMAGE = 100;
     RecyclerView rvInvitations;
     List<Invitation> invitationList;
@@ -62,12 +69,16 @@ public class ProfileActivity extends AppCompatActivity {
 
     TextView userID, followers, following;
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_activity);
 
         //TODO: set up basic info
+        // Access a Cloud Firestore instance from your Activity
         userID = (TextView) findViewById(R.id.profile_id);
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         userID.setText(email.split("@")[0]);
@@ -129,31 +140,49 @@ public class ProfileActivity extends AppCompatActivity {
         favoriteList = new ArrayList<>();
 
         // TODO: change the followings to fetch user's favorite movie list data
-        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-        String TAG = "ProfileActivity";
-        AsyncHttpClient client = new AsyncHttpClient();
-
-        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
+        DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(int i, Headers headers, JSON json) {
-
-                Log.d(TAG, "onSuccess");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONArray results = jsonObject.getJSONArray("results");
-                    Log.i(TAG, "Results: " + results.toString());
-                    favoriteList.addAll(Movie.fromJsonArray(results));
-                    favoriteAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    Log.e(TAG, "Hit json exception", e);
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                ArrayList<Long> favouriteMovieList = (ArrayList) documentSnapshot.get("movies");
+                for (long f: favouriteMovieList) {
+                    db.collection("movies").document(String.valueOf(f)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Movie movie = documentSnapshot.toObject(Movie.class);
+                            favoriteList.add(movie);
+                            favoriteAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
-
-            @Override
-            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-                Log.d(TAG, "onFail");
-            }
         });
+
+//        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+//        String TAG = "ProfileActivity";
+//        AsyncHttpClient client = new AsyncHttpClient();
+//
+//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int i, Headers headers, JSON json) {
+//
+//                Log.d(TAG, "onSuccess");
+//                JSONObject jsonObject = json.jsonObject;
+//                try {
+//                    JSONArray results = jsonObject.getJSONArray("results");
+//                    Log.i(TAG, "Results: " + results.toString());
+//                    favoriteList.addAll(Movie.fromJsonArray(results));
+//                    favoriteAdapter.notifyDataSetChanged();
+//                } catch (JSONException e) {
+//                    Log.e(TAG, "Hit json exception", e);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
+//                Log.d(TAG, "onFail");
+//            }
+//        });
     }
 
     // Function to add items in RecyclerView.

@@ -14,11 +14,17 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
 import com.facebook.stetho.common.ArrayListAccumulator;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import WatchTogether.flixster.adapters.MovieAdapter;
@@ -30,6 +36,9 @@ import static WatchTogether.flixster.MainActivity.NON_PLAYING_URL;
 public class FavoriteActivity extends AppCompatActivity {
     public static final String TAG = "FavoriteActivity";
     List<Movie> favorite_list;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,31 +56,49 @@ public class FavoriteActivity extends AppCompatActivity {
         rvFavoriteMovies.setLayoutManager(new LinearLayoutManager(this));
 
         //TODO: replace the following code to get favorite_list from database
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
+        DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(int i, Headers headers, JSON json) {
-
-                Log.d(TAG, "onSuccess");
-                JSONObject jsonObject = json.jsonObject;
-                try {
-                    JSONArray results = jsonObject.getJSONArray("results");
-                    Log.i(TAG, "Results: " + results.toString());
-                    favorite_list.addAll(Movie.fromJsonArray(results));
-                    movieAdapter.notifyDataSetChanged();
-                    Log.i(TAG, "Movies: " + favorite_list.size());
-                } catch (JSONException e) {
-                    Log.e(TAG, "Hit json exception", e);
-
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                ArrayList<Long> favouriteMovieList = (ArrayList) documentSnapshot.get("movies");
+                for (long f: favouriteMovieList) {
+                    db.collection("movies").document(String.valueOf(f)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Movie movie = documentSnapshot.toObject(Movie.class);
+                            favorite_list.add(movie);
+                            movieAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
-
-            }
-
-            @Override
-            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-                Log.d(TAG, "onFail");
             }
         });
+
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int i, Headers headers, JSON json) {
+//
+//                Log.d(TAG, "onSuccess");
+//                JSONObject jsonObject = json.jsonObject;
+//                try {
+//                    JSONArray results = jsonObject.getJSONArray("results");
+//                    Log.i(TAG, "Results: " + results.toString());
+//                    favorite_list.addAll(Movie.fromJsonArray(results));
+//                    movieAdapter.notifyDataSetChanged();
+//                    Log.i(TAG, "Movies: " + favorite_list.size());
+//                } catch (JSONException e) {
+//                    Log.e(TAG, "Hit json exception", e);
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
+//                Log.d(TAG, "onFail");
+//            }
+//        });
 
         //Specify what action a specific gesture performs, in this case swiping right or left deletes the entry
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
