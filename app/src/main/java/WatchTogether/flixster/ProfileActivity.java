@@ -26,8 +26,10 @@ import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -287,7 +289,7 @@ public class ProfileActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getParcelableExtra("path");
                 try {
-                    // TODO: update this bitmap to firebase
+                    // upload this bitmap to firebase
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                     uploadImgToFirebase(bitmap);
 
@@ -301,22 +303,35 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileImgFromFirebase() {
-        String userId = db.collection("users").document(mAuth.getCurrentUser().getEmail()).getId();
-        StorageReference fileRef = storageReference.child(userId + ".jpg");
+        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String userId = document.get("uid").toString();
+                        StorageReference fileRef = storageReference.child(userId + ".jpeg");
+                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
+                                Picasso.get().load(uri).into(imgProfile);
+                                imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } else  {
 
-        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
-                Picasso.get().load(uri).into(imgProfile);
-                imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+                }
             }
         });
+
+
     }
 
     // upload the pic to firebase storage
@@ -326,19 +341,35 @@ public class ProfileActivity extends AppCompatActivity {
         String path = MediaStore.Images.Media.insertImage(ProfileActivity.this.getContentResolver(), bitmap, "Title", null);
         Uri imgUri = Uri.parse(path);
 
-        String userId = db.collection("users").document(mAuth.getCurrentUser().getEmail()).getId();
-        StorageReference fileRef = storageReference.child(userId + ".jpg");
-        fileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileActivity.this, "Image upload Fail! ", Toast.LENGTH_LONG).show();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data userId: " + document.get("uid").toString());
+                        String userId = document.get("uid").toString();
+                        StorageReference   fileRef = storageReference.child(userId + ".jpeg");
+                        fileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ProfileActivity.this, "Image upload Fail! ", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
             }
         });
+
     }
 
     /**

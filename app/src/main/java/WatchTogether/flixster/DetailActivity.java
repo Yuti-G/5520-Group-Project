@@ -121,6 +121,7 @@ public class DetailActivity extends YouTubeBaseActivity {
                 }
             }
         });
+
         btFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
