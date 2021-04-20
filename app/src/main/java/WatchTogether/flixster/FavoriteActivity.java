@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,19 +37,22 @@ import static WatchTogether.flixster.MainActivity.NON_PLAYING_URL;
 
 public class FavoriteActivity extends AppCompatActivity {
     public static final String TAG = "FavoriteActivity";
-    List<Movie> favorite_list;
+    List<Movie> favorite_list = new ArrayListAccumulator<>();
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    MovieAdapter movieAdapter;
+    static boolean load = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
+        load = false;
         RecyclerView rvFavoriteMovies = findViewById(R.id.rv_favorite_movie);
-        favorite_list = new ArrayListAccumulator<>();
+        favorite_list.clear();
         // Create the adapter
-        MovieAdapter movieAdapter = new MovieAdapter(this, favorite_list);
+        movieAdapter = new MovieAdapter(this, favorite_list);
 
         // Set the adapter on the recycler view
         rvFavoriteMovies.setAdapter(movieAdapter);
@@ -73,5 +77,44 @@ public class FavoriteActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!load) {
+            load = true;
+        } else {
+            favorite_list.clear();
+
+            DocumentReference userRef = db.collection("users").document(mAuth.getCurrentUser().getEmail());
+            userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    ArrayList<Long> favouriteMovieList = (ArrayList) documentSnapshot.get("movies");
+                    if (favouriteMovieList.size() == 0) {
+                        Intent intent = new Intent(FavoriteActivity.this, ProfileActivity.class);
+                        startActivity(intent);
+                    }
+                    for (long f : favouriteMovieList) {
+                        db.collection("movies").document(String.valueOf(f)).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Movie movie = documentSnapshot.toObject(Movie.class);
+                                favorite_list.add(movie);
+                                movieAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(FavoriteActivity.this, ProfileActivity.class);
+        startActivity(intent);
+        return;
     }
 }
