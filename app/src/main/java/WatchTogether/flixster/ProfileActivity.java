@@ -1,5 +1,6 @@
 package WatchTogether.flixster;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,11 +20,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,16 +34,19 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,6 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +97,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         imgProfile = (ImageView) findViewById(R.id.iv_profile);
         loadProfileDefault();
+        loadProfileImgFromFirebase();
         ImagePickerActivity.clearCache(this);
+
         findViewById(R.id.ic_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,7 +204,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void loadProfile(String url) {
         Log.d(TAG, "Image cache path: " + url);
 
-        Glide.with(this).load(url)
+        Glide.with(this)
+                .load(url)
                 .into(imgProfile);
         imgProfile.setColorFilter(ContextCompat.getColor(this, android.R.color.transparent));
     }
@@ -248,7 +258,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // setting aspect ratio
         intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
-        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:244
         intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
 
         // setting maximum bitmap width and height
@@ -279,6 +289,7 @@ public class ProfileActivity extends AppCompatActivity {
                 try {
                     // TODO: update this bitmap to firebase
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    uploadImgToFirebase(bitmap);
 
                     // loading profile image from local cache
                     loadProfile(uri.toString());
@@ -287,6 +298,47 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void loadProfileImgFromFirebase() {
+        String userId = db.collection("users").document(mAuth.getCurrentUser().getEmail()).getId();
+        StorageReference fileRef = storageReference.child(userId + ".jpg");
+
+        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
+                Picasso.get().load(uri).into(imgProfile);
+                imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // upload the pic to firebase storage
+    private void uploadImgToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(ProfileActivity.this.getContentResolver(), bitmap, "Title", null);
+        Uri imgUri = Uri.parse(path);
+
+        String userId = db.collection("users").document(mAuth.getCurrentUser().getEmail()).getId();
+        StorageReference fileRef = storageReference.child(userId + ".jpg");
+        fileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, "Image upload Fail! ", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
