@@ -130,6 +130,7 @@ public class ProfileActivity extends AppCompatActivity {
                     User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null);
                     String message = (String) invitationMap.get("message");
                     HashMap m = (HashMap) invitationMap.get("movie");
+                    boolean accepted = (boolean) invitationMap.get("acceptedStatus");
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("backdrop_path", m.get("backdropPath"));
@@ -139,9 +140,8 @@ public class ProfileActivity extends AppCompatActivity {
                         jsonObject.put("id", m.get("movieId"));
                         jsonObject.put("vote_average", m.get("rating"));
                         Movie movie = new Movie(jsonObject);
-                        Invitation invitation = new Invitation((int) invitationId, dateTime, location, movie, inviteFrom, inviteTo, message);
+                        Invitation invitation = new Invitation((int) invitationId, dateTime, location, movie, inviteFrom, inviteTo, message, accepted);
                         invitationList.add(invitation);
-                        Log.v(TAG, String.valueOf(invitationList.size()));
                         invitationAdapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();

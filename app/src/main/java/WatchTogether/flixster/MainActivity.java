@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         String imagePosterUrl = redundantPosterUrl.substring(actualPosterUrlStartPos + 3);
                         String redundantBackdropUrl = m.getPosterPath();
                         int actualBackdropUrlStartPos = redundantBackdropUrl.indexOf("0", 8);
-                        String imageBackdropUrl = redundantPosterUrl.substring(actualBackdropUrlStartPos + 3);
+                        String imageBackdropUrl = redundantBackdropUrl.substring(actualBackdropUrlStartPos + 3);
                         db.collection("movies").document(String.valueOf(m.getMovieId()))
                                 .set(m)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

@@ -18,19 +18,34 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.bumptech.glide.Glide;
 import com.codepath.yutinggan.flixster.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import WatchTogether.flixster.DetailActivity;
 import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
+import WatchTogether.flixster.models.User;
 
 public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.ViewHolder>{
     private static final String TAG = "InvitationDetailAdapter";
     private List<Invitation> invitation_list;
     Context context;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -97,8 +112,8 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
         //String inviteToProfileImageURL =
         //Glide.with(context).load(inviteFromProfileImageURL).into(ivProfileFrom);
         //Glide.with(context).load(inviteToProfileImageURL).into(ivProfileTo);
-        holder.tvUserFrom.setText(invitation.getInviteFrom().getName());
-        holder.tvUserTo.setText(invitation.getInviteTo().getName());
+        holder.tvUserFrom.setText(invitation.getInviteFrom().getName().split("@")[0]);
+        holder.tvUserTo.setText(invitation.getInviteTo().getName().split("@")[0]);
         if (invitation.getMovie() != null)
             holder.bind(invitation.getMovie());
         holder.tvDateTime.setText(invitation.getDateTime());
@@ -120,6 +135,35 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                 holder.btnAccept.setEnabled(false);
                 holder.btnDecline.setEnabled(true);
                 holder.container.setBackgroundResource(R.drawable.bg_green);
+
+                db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ArrayList<HashMap> invitationMapList = (ArrayList) documentSnapshot.get("invitations");
+                        for (int i = 0; i < invitationMapList.size(); i++) {
+                            HashMap invitationMap = invitationMapList.get(i);
+                            long invitationId = (long) invitationMap.get("invitationId");
+                            String dateTime = (String) invitationMap.get("dateTime");
+                            if (invitationId == invitation.getInvitationId() && dateTime.equals(invitation.getDateTime())) {
+                                invitationMapList.get(i).put("acceptedStatus", true);
+                            }
+                        }
+                        db.collection("users").document(mAuth.getCurrentUser().getEmail())
+                                .update("invitations", invitationMapList)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+                    }
+                });
             }
         });
         holder.btnDecline.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +173,35 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                 holder.btnDecline.setEnabled(false);
                 holder.btnAccept.setEnabled(true);
                 holder.container.setBackgroundResource(R.drawable.bg_red);
+
+                db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ArrayList<HashMap> invitationMapList = (ArrayList) documentSnapshot.get("invitations");
+                        for (int i = 0; i < invitationMapList.size(); i++) {
+                            HashMap invitationMap = invitationMapList.get(i);
+                            long invitationId = (long) invitationMap.get("invitationId");
+                            String dateTime = (String) invitationMap.get("dateTime");
+                            if (invitationId == invitation.getInvitationId() && dateTime.equals(invitation.getDateTime())) {
+                                invitationMapList.get(i).put("acceptedStatus", false);
+                            }
+                        }
+                        db.collection("users").document(mAuth.getCurrentUser().getEmail())
+                                .update("invitations", invitationMapList)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+                    }
+                });
             }
         });
 

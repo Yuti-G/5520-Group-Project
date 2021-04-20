@@ -147,7 +147,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                         //TODO: send data to firebase
                         // Add a Toast when succeeds and send notification to inviteTo user
                         User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null);
-                        Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString());
+                        Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString(), false);
                         db.collection("users").document(inviteTo.getName())
                                 .update("invitations", FieldValue.arrayUnion(invitation))
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {

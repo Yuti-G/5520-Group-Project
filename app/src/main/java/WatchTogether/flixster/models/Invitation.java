@@ -20,7 +20,7 @@ public class Invitation {
 
 
     public Invitation(int invitationId, String dateTime, String location, Movie movie,
-                      User inviteFrom, User inviteTo, String message) {
+                      User inviteFrom, User inviteTo, String message, boolean accepted) {
         this.invitationId = invitationId;
         this.dateTime = dateTime;
         this.location = location;
@@ -28,7 +28,7 @@ public class Invitation {
         this.inviteFrom = inviteFrom;
         this.inviteTo = inviteTo;
         this.message = message;
-        this.accepted = false;
+        this.accepted = accepted;
     }
 
     //TODO: Add codes to update database for all setters and accept/decline()
