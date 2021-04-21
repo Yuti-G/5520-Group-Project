@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,24 +28,38 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 
 import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String SERVER_KEY = "AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
+    private static final String CLIENT_TOKEN = "cCqUtuMLTXuHg5xSg7CJhp:APA91bFE6QrDPLE6e9_RGMD78LlD7cxg28EsbyVDkb3d4LPTuQfxo4ZHRhWzNXIif6vpufRcERee3ZONyGQYgImSn0_bJb9RoPJvvkJnVjy2PS5n7cOxM5UMdyZOShXjir3NhUeAb-q5";
 
     public static final String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     public static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
+    private String token;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     List<Movie> movies;
 
@@ -55,12 +71,13 @@ public class MainActivity extends AppCompatActivity {
         movies = new ArrayListAccumulator<>();
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> userDoc = new HashMap<>();
         userDoc.put("uid", mAuth.getUid());
         userDoc.put("movies", new ArrayList<>());
         userDoc.put("invitations", new ArrayList<>());
+        setToken();
+        userDoc.put("token", token);
         DocumentReference userRef = db.collection("users").document(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail()));
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -187,5 +204,130 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+
     }
+
+    private void setToken() {
+        String newToken = MyFirebaseMessageService.getToken(getApplicationContext());
+        Log.e("message", newToken);
+        if (!newToken.equals("empty")) {
+            token = newToken;
+            Log.d(TAG, "Token created :" + token);
+            return;
+        }
+
+        DocumentReference userRef = db.collection("users").document(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail()));
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    String oldToken = (String)document.get("token");
+                    // if token changed, update token of this user
+                    if (! oldToken.equals(newToken) ){
+                        token = newToken;
+                    }
+
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+        Log.d(TAG, "No Change to the Token :" + token);
+    }
+
+    public void sendMessageToDevice(View type) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendMessageToDevice(CLIENT_TOKEN);
+            }
+        }).start();
+    }
+
+    private void sendMessageToDevice(String targetToken) {
+        JSONObject jPayload = new JSONObject();
+        JSONObject jNotification = new JSONObject();
+        JSONObject jdata = new JSONObject();
+        try {
+            jNotification.put("title", "Message Title");
+            jNotification.put("body", "Message body ");
+            jNotification.put("sound", "default");
+            jNotification.put("badge", "1");
+            /*
+            // We can add more details into the notification if we want.
+            // We happen to be ignoring them for this demo.
+            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+            */
+            jdata.put("title","data title");
+            jdata.put("content","data content");
+
+            /***
+             * The Notification object is now populated.
+             * Next, build the Payload that we send to the server.
+             */
+
+            // If sending to a single client
+            jPayload.put("to", targetToken); // CLIENT_REGISTRATION_TOKEN);
+
+            /*
+            // If sending to multiple clients (must be more than 1 and less than 1000)
+            JSONArray ja = new JSONArray();
+            ja.put(CLIENT_REGISTRATION_TOKEN);
+            // Add Other client tokens
+            ja.put(FirebaseInstanceId.getInstance().getToken());
+            jPayload.put("registration_ids", ja);
+            */
+
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data",jdata);
+
+
+            /***
+             * The Payload object is now populated.
+             * Send it to Firebase to send the message to the appropriate recipient.
+             */
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", SERVER_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            // Send FCM message content.
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(jPayload.toString().getBytes());
+            outputStream.close();
+
+            // Read FCM response.
+            InputStream inputStream = conn.getInputStream();
+            final String resp = convertStreamToString(inputStream);
+
+            Handler h = new Handler(Looper.getMainLooper());
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "run: " + resp);
+                    Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper function
+     * @param is
+     * @return
+     */
+    private String convertStreamToString(InputStream is) {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next().replace(",", ",\n") : "";
+    }
+
 }

@@ -14,13 +14,15 @@ public class User {
     private String userId;
     private String name;
     private Bitmap profileImg;
+    private String token;
 
     public User() {}
 
-    public User(String userId, String name, Bitmap profileImg) {
+    public User(String userId, String name, Bitmap profileImg,  String token) {
         this.userId = userId;
         this.name = name;
         this.profileImg = profileImg;
+        this.token = token;
     }
 
     public String getUserId() {
@@ -47,4 +49,11 @@ public class User {
         this.profileImg = profileImg;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

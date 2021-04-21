@@ -164,7 +164,8 @@ public class DetailActivity extends YouTubeBaseActivity {
                         String email = document.getId();
                         if (!email.equals(mAuth.getCurrentUser().getEmail())) {
                             String uid = (String) document.getData().get("uid");
-                            userList.add(new User(uid, email, null));
+                            String token = (String) document.getData().get("token");
+                            userList.add(new User(uid, email, null, token));
                             userAdapter.notifyDataSetChanged();
                         }
                     }

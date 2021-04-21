@@ -112,9 +112,9 @@ public class InvitationActivity extends AppCompatActivity {
                     String dateTime = (String) invitationMap.get("dateTime");
                     String location = (String) invitationMap.get("location");
                     HashMap userFrom = (HashMap) invitationMap.get("inviteFrom");
-                    User inviteFrom = new User((String) userFrom.get("userId"), (String) userFrom.get("name"), null);
+                    User inviteFrom = new User((String) userFrom.get("userId"), (String) userFrom.get("name"), null, (String) userFrom.get("token"));
                     HashMap userTo = (HashMap) invitationMap.get("inviteTo");
-                    User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null);
+                    User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null, (String) userFrom.get("token"));
                     String message = (String) invitationMap.get("message");
                     boolean accepted = (boolean) invitationMap.get("acceptedStatus");
                     HashMap m = (HashMap) invitationMap.get("movie");
