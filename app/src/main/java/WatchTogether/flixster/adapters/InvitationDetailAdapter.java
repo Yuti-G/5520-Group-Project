@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +49,7 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -108,10 +112,37 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
         // Recycler view with the list items
         Invitation invitation = invitation_list.get(position);
         // TODO: get inviteFrom and inviteTo user's icon and attach image to imageView
-        //String inviteFromProfileImageURL =
-        //String inviteToProfileImageURL =
-        //Glide.with(context).load(inviteFromProfileImageURL).into(ivProfileFrom);
-        //Glide.with(context).load(inviteToProfileImageURL).into(ivProfileTo);
+        //get inviteFrom and inviteTo user's icon and attach image to imageView
+        String  inviteToUserId = invitation.getInviteTo().getUserId();
+        String  inviteFromUserId = invitation.getInviteFrom().getUserId();
+        firebaseStorage.getReference().child(inviteFromUserId + ".jpeg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.d(TAG, "Image URI:  " + uri);
+                //holder.imageView.setImageURI(uri);
+                //Glide.with(context).load(uri).into(holder.imageView);
+                Picasso.get().load(uri).into(holder.ivProfileFrom);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Get Image fail ");
+            }
+        });
+
+        firebaseStorage.getReference().child(inviteToUserId + ".jpeg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.d(TAG, "Image URI:  " + uri);
+                Picasso.get().load(uri).into(holder.ivProfileTo);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Get Image fail ");
+            }
+        });
+
         holder.tvUserFrom.setText(invitation.getInviteFrom().getName().split("@")[0]);
         holder.tvUserTo.setText(invitation.getInviteTo().getName().split("@")[0]);
         if (invitation.getMovie() != null)
