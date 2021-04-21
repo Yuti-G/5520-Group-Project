@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -29,10 +30,14 @@ import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.yutinggan.flixster.R;
 import com.facebook.stetho.common.ArrayListAccumulator;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +64,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
     TextView tvDateTime;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -99,8 +105,23 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         User user = usersList.get(position);
         holder.textView.setText(user.getName());
         // TODO get user icon and attach image to imageView
-        //String userProfileImageURL =
-        //Glide.with(context).load(userProfileImageURL).into(imageView);
+        // get user icon and attach image to imageView
+        String  userId = user.getUserId();
+        Log.d(TAG, "userId " + userId);
+        StorageReference fileRef = firebaseStorage.getReference().child(userId + ".jpeg");
+        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.d(TAG, "Image URI:  " + uri);
+                Picasso.get().load(uri).into(holder.imageView);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Get Image fail ");
+            }
+        });
+
         holder.container.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override

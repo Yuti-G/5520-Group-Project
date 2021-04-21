@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import WatchTogether.flixster.DetailActivity;
 import com.codepath.yutinggan.flixster.R;
+import com.google.firebase.storage.FirebaseStorage;
+
 import WatchTogether.flixster.models.Movie;
 
 import org.parceler.Parcels;
@@ -27,6 +29,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     Context context;
     List<Movie> movies;
+
 
     public MovieAdapter(Context context, List<Movie> movies) {
         this.context = context;
