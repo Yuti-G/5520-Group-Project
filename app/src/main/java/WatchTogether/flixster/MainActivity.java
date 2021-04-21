@@ -52,7 +52,7 @@ import java.util.Scanner;
 import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String SERVER_KEY = "AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
+    private static final String SERVER_KEY = "key=AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
     private static final String CLIENT_TOKEN = "cCqUtuMLTXuHg5xSg7CJhp:APA91bFE6QrDPLE6e9_RGMD78LlD7cxg28EsbyVDkb3d4LPTuQfxo4ZHRhWzNXIif6vpufRcERee3ZONyGQYgImSn0_bJb9RoPJvvkJnVjy2PS5n7cOxM5UMdyZOShXjir3NhUeAb-q5";
 
     public static final String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        // update token field every time open app.
+                        userRef.update("token", token);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
                         userRef.set(userDoc)
@@ -253,17 +255,16 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jNotification = new JSONObject();
         JSONObject jdata = new JSONObject();
         try {
-            jNotification.put("title", "Message Title");
-            jNotification.put("body", "Message body ");
+            jNotification.put("title", "Stick It To 'Em");
+            jNotification.put("body", "Sticker Sent From xxx");
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
-            /*
-            // We can add more details into the notification if we want.
-            // We happen to be ignoring them for this demo.
             jNotification.put("click_action", "OPEN_ACTIVITY_1");
-            */
-            jdata.put("title","data title");
-            jdata.put("content","data content");
+
+            // If sending to a single client
+            jPayload.put("to", targetToken);
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
 
             /***
              * The Notification object is now populated.
@@ -271,16 +272,8 @@ public class MainActivity extends AppCompatActivity {
              */
 
             // If sending to a single client
-            jPayload.put("to", targetToken); // CLIENT_REGISTRATION_TOKEN);
+            jPayload.put("to", "cCqUtuMLTXuHg5xSg7CJhp:APA91bFE6QrDPLE6e9_RGMD78LlD7cxg28EsbyVDkb3d4LPTuQfxo4ZHRhWzNXIif6vpufRcERee3ZONyGQYgImSn0_bJb9RoPJvvkJnVjy2PS5n7cOxM5UMdyZOShXjir3NhUeAb-q5"); // CLIENT_REGISTRATION_TOKEN);
 
-            /*
-            // If sending to multiple clients (must be more than 1 and less than 1000)
-            JSONArray ja = new JSONArray();
-            ja.put(CLIENT_REGISTRATION_TOKEN);
-            // Add Other client tokens
-            ja.put(FirebaseInstanceId.getInstance().getToken());
-            jPayload.put("registration_ids", ja);
-            */
 
             jPayload.put("priority", "high");
             jPayload.put("notification", jNotification);

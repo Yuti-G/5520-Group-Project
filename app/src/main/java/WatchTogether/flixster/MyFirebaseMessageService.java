@@ -28,32 +28,32 @@ public class MyFirebaseMessageService extends FirebaseMessagingService {
     private static final String CHANNEL_NAME  = "CHANNEL_NAME";
     private static final String CHANNEL_DESCRIPTION  = "CHANNEL_DESCRIPTION";
 
-//    public MyFirebaseMessageService() {
-//        super();
-//        Log.d(TAG, "service running");
-//    }
+    public MyFirebaseMessageService() {
+        super();
+        Log.d(TAG, "service running");
+    }
 
-//    @Override
-//    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-//        super.onMessageReceived(remoteMessage);
-//        Log.d(TAG, "notification received");
-//
-//
-//        // TODO(developer): Handle FCM messages here.
-//        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-//        Log.d(TAG, "From: " + remoteMessage.getFrom() + "recieved an message! ");
-//
-//        // Check if message contains a data payload.
-//        if (remoteMessage.getData().size() > 0) {
-//            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-//        }
-//
-//        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
-//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//            showNotification(remoteMessage);
-//        }
-//    }
+    @Override
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
+        Log.d(TAG, "notification received");
+
+
+        // TODO(developer): Handle FCM messages here.
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Log.d(TAG, "From: " + remoteMessage.getFrom() + "recieved an message! ");
+
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+        }
+
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            showNotification(remoteMessage);
+        }
+    }
 
     @Override
     public void onNewToken(String token) {
@@ -68,40 +68,40 @@ public class MyFirebaseMessageService extends FirebaseMessagingService {
     }
 
     //set notification
-//    private void showNotification(RemoteMessage remoteMessage) {
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-//                PendingIntent.FLAG_ONE_SHOT);
-//
-//        Notification notification;
-//        NotificationCompat.Builder builder;
-//        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
-//        {
-//            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,CHANNEL_NAME,NotificationManager.IMPORTANCE_HIGH);
-//            // Configure the notification channel
-//            notificationChannel.setDescription(CHANNEL_DESCRIPTION);
-//            notificationManager.createNotificationChannel(notificationChannel);
-//            builder = new NotificationCompat.Builder(this,CHANNEL_ID);
-//
-//        }
-//        else {
-//            builder = new NotificationCompat.Builder(this);
-//        }
-//
-//
-//        notification = builder.setContentTitle(remoteMessage.getNotification().getTitle())
-//                .setContentText(remoteMessage.getNotification().getBody())
-//                .setContentTitle(remoteMessage.getNotification().getTitle())
-//                .setSmallIcon(R.mipmap.ic_launcher)
-//                .setAutoCancel(true)
-//                .setContentIntent(pendingIntent)
-//                .build();
-//
-//
-//        notificationManager.notify(0,notification);
-//    }
+    private void showNotification(RemoteMessage remoteMessage) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Notification notification;
+        NotificationCompat.Builder builder;
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,CHANNEL_NAME,NotificationManager.IMPORTANCE_HIGH);
+            // Configure the notification channel
+            notificationChannel.setDescription(CHANNEL_DESCRIPTION);
+            notificationManager.createNotificationChannel(notificationChannel);
+            builder = new NotificationCompat.Builder(this,CHANNEL_ID);
+
+        }
+        else {
+            builder = new NotificationCompat.Builder(this);
+        }
+
+
+        notification = builder.setContentTitle(remoteMessage.getNotification().getTitle())
+                .setContentText(remoteMessage.getNotification().getBody())
+                .setContentTitle(remoteMessage.getNotification().getTitle())
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
+
+
+        notificationManager.notify(0,notification);
+    }
 
 }
