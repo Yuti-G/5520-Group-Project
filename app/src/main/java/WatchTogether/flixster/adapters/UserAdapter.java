@@ -206,7 +206,6 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                                                     }
                                                 }).start();
 
-                                                showToast("invitation send successfully");
                                             }
                                         });
 
@@ -388,6 +387,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                     Log.e(TAG, "run: " + resp);
                     // Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
                     showToast(resp);
+                    // a: 持续在detail页面, 同时b reinstall app导致token改变, resp就fail了, 要重新进入detail页面
+                    showToast("invitation send successfully");
                 }
             });
         } catch (JSONException | IOException e) {
