@@ -27,7 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+
 import com.google.firebase.storage.StorageReference;
+
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -51,6 +53,7 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfileFrom, ivProfileTo, ivPoster;
@@ -142,7 +145,6 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                 Log.d(TAG, "Get Image fail ");
             }
         });
-
 
         holder.tvUserFrom.setText(invitation.getInviteFrom().getName().split("@")[0]);
         holder.tvUserTo.setText(invitation.getInviteTo().getName().split("@")[0]);

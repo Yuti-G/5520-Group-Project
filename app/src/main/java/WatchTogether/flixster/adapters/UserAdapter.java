@@ -137,8 +137,6 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         });
 
 
-
-
         holder.container.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override

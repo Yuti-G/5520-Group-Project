@@ -31,7 +31,8 @@ import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
 
 public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
-    private static final String TAG = "InvitationAdaptor";
+    private static final String TAG = "InvitationAdapter";
+
     private List<Invitation> invitation_list;
     Context context;
     View.OnClickListener onClickListener;
@@ -82,6 +83,7 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
         String  inviteFromUserId = invitation.getInviteFrom().getUserId();
         Log.d(TAG, "get invited from " + inviteFromUserId);
         StorageReference fileRef = firebaseStorage.getReference().child(inviteFromUserId + ".jpeg");
+
         fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {

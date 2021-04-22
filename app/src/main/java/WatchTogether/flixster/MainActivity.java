@@ -239,4 +239,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "No Change to the Token :" + token);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+        Log.v(TAG, Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(getApplicationContext(), "Successfully Signed Out",
+                Toast.LENGTH_SHORT).show();
+        return;
+    }
 }
