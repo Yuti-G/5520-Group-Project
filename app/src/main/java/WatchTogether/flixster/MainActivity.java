@@ -52,9 +52,6 @@ import java.util.Scanner;
 import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String SERVER_KEY = "key=AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
-    private static final String CLIENT_TOKEN = "cCqUtuMLTXuHg5xSg7CJhp:APA91bFE6QrDPLE6e9_RGMD78LlD7cxg28EsbyVDkb3d4LPTuQfxo4ZHRhWzNXIif6vpufRcERee3ZONyGQYgImSn0_bJb9RoPJvvkJnVjy2PS5n7cOxM5UMdyZOShXjir3NhUeAb-q5";
-
     public static final String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     public static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
@@ -211,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // every time onCreate, get the set token and update in firebase
     private void setToken() {
         String newToken = MyFirebaseMessageService.getToken(getApplicationContext());
         Log.e("message", newToken);
@@ -239,88 +237,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Log.d(TAG, "No Change to the Token :" + token);
-    }
-
-    public void sendMessageToDevice(View type) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sendMessageToDevice(CLIENT_TOKEN);
-            }
-        }).start();
-    }
-
-    private void sendMessageToDevice(String targetToken) {
-        JSONObject jPayload = new JSONObject();
-        JSONObject jNotification = new JSONObject();
-        JSONObject jdata = new JSONObject();
-        try {
-            jNotification.put("title", "Stick It To 'Em");
-            jNotification.put("body", "Sticker Sent From xxx");
-            jNotification.put("sound", "default");
-            jNotification.put("badge", "1");
-            jNotification.put("click_action", "OPEN_ACTIVITY_1");
-
-            // If sending to a single client
-            jPayload.put("to", targetToken);
-            jPayload.put("priority", "high");
-            jPayload.put("notification", jNotification);
-
-            /***
-             * The Notification object is now populated.
-             * Next, build the Payload that we send to the server.
-             */
-
-            // If sending to a single client
-            jPayload.put("to", "cCqUtuMLTXuHg5xSg7CJhp:APA91bFE6QrDPLE6e9_RGMD78LlD7cxg28EsbyVDkb3d4LPTuQfxo4ZHRhWzNXIif6vpufRcERee3ZONyGQYgImSn0_bJb9RoPJvvkJnVjy2PS5n7cOxM5UMdyZOShXjir3NhUeAb-q5"); // CLIENT_REGISTRATION_TOKEN);
-
-
-            jPayload.put("priority", "high");
-            jPayload.put("notification", jNotification);
-            jPayload.put("data",jdata);
-
-
-            /***
-             * The Payload object is now populated.
-             * Send it to Firebase to send the message to the appropriate recipient.
-             */
-            URL url = new URL("https://fcm.googleapis.com/fcm/send");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", SERVER_KEY);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            // Send FCM message content.
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(jPayload.toString().getBytes());
-            outputStream.close();
-
-            // Read FCM response.
-            InputStream inputStream = conn.getInputStream();
-            final String resp = convertStreamToString(inputStream);
-
-            Handler h = new Handler(Looper.getMainLooper());
-            h.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e(TAG, "run: " + resp);
-                    Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
-                }
-            });
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Helper function
-     * @param is
-     * @return
-     */
-    private String convertStreamToString(InputStream is) {
-        Scanner s = new Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next().replace(",", ",\n") : "";
     }
 
 }

@@ -70,7 +70,7 @@ import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
-    private static final String SERVER_KEY = "AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
+    private static final String SERVER_KEY = "key=AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
     private String TAG = "SendInvitation";
     private List<User> usersList;
     Context context;
@@ -183,7 +183,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        // TODO: Add a Toast when succeeds and send notification to inviteTo user
+                        // Add a Toast when succeeds and send notification to inviteTo user
                         db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -196,24 +196,17 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                                             public void onSuccess(Void aVoid) {
                                                 Log.d(TAG, "DocumentSnapshot successfully written!");
 
-                                                String targetToken = inviteTo.getToken();
+                                                String fromUsername = inviteFrom.getName();
+                                                String toToken = inviteTo.getToken();
+                                                //showToast("send notification to :" + toToken);
                                                 new Thread(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        String fromUsername = inviteFrom.getName();
-                                                        sendMessage(targetToken, fromUsername);
-                                                        for (int i = 0; i < 20; i++) {
-                                                            try {
-                                                                Thread.sleep(1000);
-                                                            } catch (InterruptedException e) {
-                                                                e.printStackTrace();
-                                                            }
-                                                        }
-
+                                                        sendMessageToDevice(toToken, fromUsername);
                                                     }
-                                                });
+                                                }).start();
 
-                                                showToast();
+                                                showToast("invitation send successfully");
                                             }
                                         });
 
@@ -244,6 +237,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                 context.startActivity(i);
             }
         });
+
+
 
 
 
@@ -305,6 +300,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         dialog.show();
     }
 
+
+
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         this.year = year;
@@ -325,14 +322,22 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         tvDateTime.setText(String.format("%d-%d-%d %d:%d", this.year, this.month, this.day, this.hour, this.minute));
     }
 
-    private void sendMessage(String targetToken, String fromUser) {
+
+
+
+    // Toast when invitation sent
+    private void showToast(String toastMessage) {
+        Toast.makeText(this.context, toastMessage, Toast.LENGTH_LONG).show();
+    }
+
+
+    private void sendMessageToDevice(String targetToken, String fromUsername) {
         JSONObject jPayload = new JSONObject();
         JSONObject jNotification = new JSONObject();
-
-        try{
-
-            jNotification.put("title", "Stick It To 'Em");
-            jNotification.put("body", "Sticker Sent From " + fromUser);
+        JSONObject jdata = new JSONObject();
+        try {
+            jNotification.put("title", "You got an New Invitation!");
+            jNotification.put("body", fromUsername + "invite you to watch together!");
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
             jNotification.put("click_action", "OPEN_ACTIVITY_1");
@@ -342,7 +347,24 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
             jPayload.put("priority", "high");
             jPayload.put("notification", jNotification);
 
-            // HTTP and send the payload
+            /***
+             * The Notification object is now populated.
+             * Next, build the Payload that we send to the server.
+             */
+
+            // If sending to a single client
+            jPayload.put("to", targetToken); // CLIENT_REGISTRATION_TOKEN);
+
+
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data",jdata);
+
+
+            /***
+             * The Payload object is now populated.
+             * Send it to Firebase to send the message to the appropriate recipient.
+             */
             URL url = new URL("https://fcm.googleapis.com/fcm/send");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -363,22 +385,23 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
             h.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(TAG, "run: " + resp);
+                    Log.e(TAG, "run: " + resp);
+                    // Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
+                    showToast(resp);
                 }
             });
-
         } catch (JSONException | IOException e) {
-            Log.e(TAG,"sendMessageToNews threw error",e);
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Helper function
+     * @param is
+     * @return
+     */
     private String convertStreamToString(InputStream is) {
         Scanner s = new Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next().replace(",", ",\n") : "";
-    }
-
-    // Toast when invitation sent
-    private void showToast() {
-        Toast.makeText(this.context, "invitation sent successfully! ", Toast.LENGTH_LONG).show();
     }
 }

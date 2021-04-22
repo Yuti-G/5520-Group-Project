@@ -87,7 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_activity);
 
-        //TODO: set up basic info
+        //set up basic info
         // Access a Cloud Firestore instance from your Activity
         userID = (TextView) findViewById(R.id.profile_id);
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
