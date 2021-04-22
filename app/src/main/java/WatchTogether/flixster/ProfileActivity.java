@@ -334,43 +334,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    // upload the pic to firebase storage
-    private void uploadImgToFirebase(Bitmap bitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(ProfileActivity.this.getContentResolver(), bitmap, "Title", null);
-        Uri imgUri = Uri.parse(path);
-
-        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data userId: " + document.get("uid").toString());
-                        String userId = document.get("uid").toString();
-                        StorageReference   fileRef = storageReference.child(userId + ".jpeg");
-                        fileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ProfileActivity.this, "Image upload Fail! ", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
-    }
 
     /**
      * Showing Alert Dialog with Settings option
