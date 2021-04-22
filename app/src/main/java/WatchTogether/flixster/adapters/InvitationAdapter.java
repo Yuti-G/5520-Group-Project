@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -24,11 +26,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import WatchTogether.flixster.ProfileActivity;
 import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
 
 public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
     private static final String TAG = "InvitationAdapter";
+
     private List<Invitation> invitation_list;
     Context context;
     View.OnClickListener onClickListener;
@@ -70,13 +74,10 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
         Invitation invitation = invitation_list.get(position);
         String text;
         if (invitation.getMovie() != null)
-            text = "invites you to watch" + invitation.getMovie().getTitle() + " together!";
+            text = "invites you to watch" + invitation.getMovie().getTitle() + " together!!!";
         else
             text = "invites you to watch xxx together!";
         holder.textView.setText(text);
-        // TODO get inviteFrom user's icon and attach image to imageView
-        //String inviteFromProfileImageURL =
-        //Glide.with(context).load(inviteFromProfileImageURL).into(imageView);
 
         // get inviteFrom user's icon and attach image to imageView
         String  inviteFromUserId = invitation.getInviteFrom().getUserId();

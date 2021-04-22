@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -33,6 +36,7 @@ import com.facebook.stetho.common.ArrayListAccumulator;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -45,18 +49,28 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import WatchTogether.flixster.DetailActivity;
+import WatchTogether.flixster.MainActivity;
+import WatchTogether.flixster.ProfileActivity;
 import WatchTogether.flixster.models.Invitation;
 import WatchTogether.flixster.models.Movie;
 import WatchTogether.flixster.models.User;
 import okhttp3.Headers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
+    private static final String SERVER_KEY = "key=AAAAfte_3rA:APA91bF5tFMiJEmO-Ob4p927DABrWcaXir9PMNtiFxZoBSI52iw8QAbWHZYscei0iU3sSVelMjdiKhFLNeBiAst598cYUa2WJNvN3vPyoymgKjLAgik9DtnVfQo5hveTeKA2ahF3HxdW";
     private String TAG = "SendInvitation";
     private List<User> usersList;
     Context context;
@@ -104,7 +118,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         // Recycler view with the list items
         User user = usersList.get(position);
         holder.textView.setText(user.getName());
-        // TODO get user icon and attach image to imageView
+
         // get user icon and attach image to imageView
         String  userId = user.getUserId();
         Log.d(TAG, "userId " + userId);
@@ -121,6 +135,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                 Log.d(TAG, "Get Image fail ");
             }
         });
+
 
         holder.container.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -165,19 +180,42 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                 .setPositiveButton("Invite", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //TODO: send data to firebase
+
                         // Add a Toast when succeeds and send notification to inviteTo user
-                        User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null);
-                        Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString(), false);
-                        db.collection("users").document(inviteTo.getName())
-                                .update("invitations", FieldValue.arrayUnion(invitation))
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                                    }
-                                });
-                        dialog.cancel();
+                        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                String fromToken = (String) documentSnapshot.get("token");
+                                User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null, fromToken);                                Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString(), false);
+                                db.collection("users").document(inviteTo.getName())
+                                        .update("invitations", FieldValue.arrayUnion(invitation))
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(TAG, "DocumentSnapshot successfully written!");
+
+                                                String fromUsername = inviteFrom.getName();
+                                                String toToken = inviteTo.getToken();
+                                                //showToast("send notification to :" + toToken);
+                                                new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        sendMessageToDevice(toToken, fromUsername);
+                                                    }
+                                                }).start();
+
+                                            }
+                                        });
+
+
+                                dialog.cancel();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "DocumentSnapshot successfully Fail! file : " + TAG);
+                            }
+                        });
                     }
                 })
                 .create();
@@ -196,6 +234,10 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                 context.startActivity(i);
             }
         });
+
+
+
+
 
 //        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
 //        //List<Movie> movies = new ArrayListAccumulator<>();
@@ -255,6 +297,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         dialog.show();
     }
 
+
+
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         this.year = year;
@@ -273,5 +317,90 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         this.hour = hourOfDay;
         this.minute = minute;
         tvDateTime.setText(String.format("%d-%d-%d %d:%d", this.year, this.month, this.day, this.hour, this.minute));
+    }
+
+
+
+
+    // Toast when invitation sent
+    private void showToast(String toastMessage) {
+        Toast.makeText(this.context, toastMessage, Toast.LENGTH_LONG).show();
+    }
+
+
+    private void sendMessageToDevice(String targetToken, String fromUsername) {
+        JSONObject jPayload = new JSONObject();
+        JSONObject jNotification = new JSONObject();
+        JSONObject jdata = new JSONObject();
+        try {
+            jNotification.put("title", "You got an New Invitation!");
+            jNotification.put("body", fromUsername + "invite you to watch together!");
+            jNotification.put("sound", "default");
+            jNotification.put("badge", "1");
+            jNotification.put("click_action", "OPEN_ACTIVITY_1");
+
+            // If sending to a single client
+            jPayload.put("to", targetToken);
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+
+            /***
+             * The Notification object is now populated.
+             * Next, build the Payload that we send to the server.
+             */
+
+            // If sending to a single client
+            jPayload.put("to", targetToken); // CLIENT_REGISTRATION_TOKEN);
+
+
+            jPayload.put("priority", "high");
+            jPayload.put("notification", jNotification);
+            jPayload.put("data",jdata);
+
+
+            /***
+             * The Payload object is now populated.
+             * Send it to Firebase to send the message to the appropriate recipient.
+             */
+            URL url = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", SERVER_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            // Send FCM message content.
+            OutputStream outputStream = conn.getOutputStream();
+            outputStream.write(jPayload.toString().getBytes());
+            outputStream.close();
+
+            // Read FCM response.
+            InputStream inputStream = conn.getInputStream();
+            final String resp = convertStreamToString(inputStream);
+
+            Handler h = new Handler(Looper.getMainLooper());
+            h.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "run: " + resp);
+                    // Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
+                    showToast(resp);
+                    // a: 持续在detail页面, 同时b reinstall app导致token改变, resp就fail了, 要重新进入detail页面
+                    showToast("invitation send successfully");
+                }
+            });
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Helper function
+     * @param is
+     * @return
+     */
+    private String convertStreamToString(InputStream is) {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next().replace(",", ",\n") : "";
     }
 }

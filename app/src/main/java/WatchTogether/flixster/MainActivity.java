@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,24 +28,35 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 
 import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity {
-
     public static final String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     public static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
+    private String token;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     List<Movie> movies;
 
@@ -55,12 +68,13 @@ public class MainActivity extends AppCompatActivity {
         movies = new ArrayListAccumulator<>();
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> userDoc = new HashMap<>();
         userDoc.put("uid", mAuth.getUid());
         userDoc.put("movies", new ArrayList<>());
         userDoc.put("invitations", new ArrayList<>());
+        setToken();
+        userDoc.put("token", token);
         DocumentReference userRef = db.collection("users").document(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail()));
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -68,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
+                        // update token field every time open app.
+                        userRef.update("token", token);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
                         userRef.set(userDoc)
@@ -187,7 +203,42 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+
     }
+
+    // every time onCreate, get the set token and update in firebase
+    private void setToken() {
+        String newToken = MyFirebaseMessageService.getToken(getApplicationContext());
+        Log.e("message", newToken);
+        if (!newToken.equals("empty")) {
+            token = newToken;
+            Log.d(TAG, "Token created :" + token);
+            return;
+        }
+
+        DocumentReference userRef = db.collection("users").document(Objects.requireNonNull(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail()));
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    String oldToken = (String)document.get("token");
+                    // if token changed, update token of this user
+                    if (! oldToken.equals(newToken) ){
+                        token = newToken;
+                    }
+
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+        Log.d(TAG, "No Change to the Token :" + token);
+    }
+
 
     @Override
     public void onBackPressed() {

@@ -27,6 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+
+import com.google.firebase.storage.StorageReference;
+
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -111,7 +114,7 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
         // Set the text of each item of
         // Recycler view with the list items
         Invitation invitation = invitation_list.get(position);
-        // TODO: get inviteFrom and inviteTo user's icon and attach image to imageView
+
         //get inviteFrom and inviteTo user's icon and attach image to imageView
         String  inviteToUserId = invitation.getInviteTo().getUserId();
         String  inviteFromUserId = invitation.getInviteFrom().getUserId();

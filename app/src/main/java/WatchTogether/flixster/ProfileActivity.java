@@ -87,7 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_activity);
 
-        //TODO: set up basic info
+        //set up basic info
         // Access a Cloud Firestore instance from your Activity
         userID = (TextView) findViewById(R.id.profile_id);
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
@@ -101,6 +101,7 @@ public class ProfileActivity extends AppCompatActivity {
         loadProfileDefault();
         loadProfileImg();
         ImagePickerActivity.clearCache(this);
+
         findViewById(R.id.ic_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,9 +136,9 @@ public class ProfileActivity extends AppCompatActivity {
                     String dateTime = (String) invitationMap.get("dateTime");
                     String location = (String) invitationMap.get("location");
                     HashMap userFrom = (HashMap) invitationMap.get("inviteFrom");
-                    User inviteFrom = new User((String) userFrom.get("userId"), (String) userFrom.get("name"), null);
+                    User inviteFrom = new User((String) userFrom.get("userId"), (String) userFrom.get("name"), null, (String) userFrom.get("token"));
                     HashMap userTo = (HashMap) invitationMap.get("inviteTo");
-                    User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null);
+                    User inviteTo = new User((String) userTo.get("userId"), (String) userTo.get("name"), null, (String) userFrom.get("token"));
                     String message = (String) invitationMap.get("message");
                     HashMap m = (HashMap) invitationMap.get("movie");
                     boolean accepted = (boolean) invitationMap.get("acceptedStatus");
@@ -205,7 +206,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void loadProfile(String url) {
         Log.d(TAG, "Image cache path: " + url);
 
-        Glide.with(this).load(url)
+        Glide.with(this)
+                .load(url)
                 .into(imgProfile);
         imgProfile.setColorFilter(ContextCompat.getColor(this, android.R.color.transparent));
     }
@@ -258,7 +260,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // setting aspect ratio
         intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
-        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:244
         intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
 
         // setting maximum bitmap width and height
@@ -287,7 +289,7 @@ public class ProfileActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 Uri uri = data.getParcelableExtra("path");
                 try {
-                    // TODO: update this bitmap to firebase
+                    // upload this bitmap to firebase
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
                     uploadImgToFirebase(bitmap);
 
@@ -299,6 +301,39 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void loadProfileImgFromFirebase() {
+        db.collection("users").document(mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String userId = document.get("uid").toString();
+                        StorageReference fileRef = storageReference.child(userId + ".jpeg");
+                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
+                                Picasso.get().load(uri).into(imgProfile);
+                                imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } else  {
+
+                }
+            }
+        });
+
+
+    }
+
 
     /**
      * Showing Alert Dialog with Settings option
