@@ -314,19 +314,19 @@ public class ProfileActivity extends AppCompatActivity {
                         fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
+                                // Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
                                 Picasso.get().load(uri).into(imgProfile);
                                 imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+                                Log.e(TAG, "download profile img failed");
                             }
                         });
                     }
                 } else  {
-
+                    Log.e(TAG, "get user data from firebase failed");
                 }
             }
         });
@@ -381,19 +381,19 @@ public class ProfileActivity extends AppCompatActivity {
                         fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                Toast.makeText(ProfileActivity.this, "Image download success! ", Toast.LENGTH_LONG).show();
+
                                 Picasso.get().load(uri).into(imgProfile);
                                 imgProfile.setColorFilter(ContextCompat.getColor(ProfileActivity.this, android.R.color.transparent));
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ProfileActivity.this, "Image download fail! ", Toast.LENGTH_LONG).show();
+                                Log.e(TAG, "download profile img failed");
                             }
                         });
                     }
                 } else  {
-
+                    Log.e(TAG, "get user data from firebase failed");
                 }
             }
         });
@@ -450,19 +450,20 @@ public class ProfileActivity extends AppCompatActivity {
                         fileRef.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
+                                // Toast.makeText(ProfileActivity.this, "Image upload success! ", Toast.LENGTH_LONG).show();
+                                Log.d(TAG, "Image upload success!");
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(ProfileActivity.this, "Image upload Fail! ", Toast.LENGTH_LONG).show();
+                                Log.e(TAG, "Image upload Fail! ");
                             }
                         });
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.e(TAG, "No such document");
                     }
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.e(TAG, "get failed with ", task.getException());
                 }
             }
         });

@@ -1,48 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="16dp"
+    android:layout_height="match_parent"
+    android:layout_margin="0dp"
     android:orientation="vertical"
     tools:context="WatchTogether.flixster.LoginActivity">
 
 
+  <!--  <View-->
+  <!--      android:layout_width="match_parent"-->
+  <!--      android:layout_height="match_parent"-->
+  <!--      android:background="@color/colorBackgroundLayer"-->
+  <!--      tools:layout_editor_absoluteX="16dp"-->
+  <!--      tools:layout_editor_absoluteY="36dp" />-->
+
+<!--  <ImageView-->
+<!--      android:id="@+id/imageView"-->
+<!--      android:layout_width="414dp"-->
+<!--      android:layout_height="738dp"-->
+<!--      android:contentDescription="@string/app_name"-->
+<!--      android:scaleType="centerCrop"-->
+<!--      android:src="@drawable/loginbg"-->
+<!--      app:layout_constraintBottom_toBottomOf="parent"-->
+<!--      app:layout_constraintEnd_toEndOf="parent"-->
+<!--      app:layout_constraintHorizontal_bias="0.666"-->
+<!--      app:layout_constraintStart_toStartOf="parent"-->
+<!--      app:layout_constraintTop_toTopOf="parent"-->
+<!--      app:layout_constraintVertical_bias="1.0" />-->
+
+  <ImageView
+      android:id="@+id/imageView2"
+      android:layout_width="296dp"
+      android:layout_height="170dp"
+      android:contentDescription="@string/app_name"
+      android:src="@drawable/watch_logo"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.493"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/imageView" />
+
   <EditText
       android:id="@+id/etUsername"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
       android:layout_weight="1"
+      android:autofillHints=""
       android:ems="10"
-      android:hint="username" />
+      android:hint="Email"
+      android:inputType="textEmailAddress"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.502"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/imageView2"
+      app:layout_constraintVertical_bias="0.0" />
 
   <EditText
       android:id="@+id/etPassword"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginTop="28dp"
       android:layout_weight="1"
       android:ems="10"
-      android:hint="password"
-      android:inputType="textPassword" />
+      android:hint="Password"
+      android:inputType="textPassword"
+      app:layout_constraintEnd_toEndOf="@+id/etUsername"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="@+id/etUsername"
+      app:layout_constraintTop_toBottomOf="@+id/etUsername" />
 
   <Button
       android:id="@+id/btnLogin"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginTop="24dp"
       android:layout_weight="1"
-      android:text="Login"/>
+      android:text="Login"
+      app:layout_constraintEnd_toEndOf="@+id/etPassword"
+      app:layout_constraintHorizontal_bias="0.491"
+      app:layout_constraintStart_toStartOf="@+id/etPassword"
+      app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
-  <Button
-      android:id="@+id/btnSignup"
-      android:layout_width="match_parent"
+  <TextView
+      android:id="@+id/tvSignup"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginBottom="64dp"
       android:layout_weight="1"
-      android:text="SignUp"/>
+      android:text="New user? Sign Up"
+      android:textColor="@color/design_default_color_primary"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="@+id/sign_in_button"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="@+id/sign_in_button"
+      app:layout_constraintTop_toBottomOf="@+id/sign_in_button"
+      app:layout_constraintVertical_bias="0.04000002" />
 
   <com.google.android.gms.common.SignInButton
       android:id="@+id/sign_in_button"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
+      android:layout_width="127dp"
+      android:layout_height="45dp"
+      android:layout_marginTop="28dp"
+      app:layout_constraintEnd_toEndOf="@+id/btnLogin"
+      app:layout_constraintHorizontal_bias="0.487"
+      app:layout_constraintStart_toStartOf="@+id/btnLogin"
+      app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

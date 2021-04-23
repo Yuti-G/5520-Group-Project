@@ -26,8 +26,9 @@
         <activity android:name="WatchTogether.flixster.ImagePickerActivity" />
         <activity android:name="WatchTogether.flixster.InvitationActivity" />
         <activity android:name="WatchTogether.flixster.FavoriteActivity" />
-        <activity android:name="WatchTogether.flixster.SignUpActivity" />
-        <activity android:name="WatchTogether.flixster.LoginActivity">
+        <activity android:name="WatchTogether.flixster.SignUpActivity" android:theme="@style/FullScreen" />
+        <activity android:name="WatchTogether.flixster.LoginActivity"
+            android:theme="@style/FullScreen">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
 
