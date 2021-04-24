@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         String redundantPosterUrl = m.getPosterPath();
                         int actualPosterUrlStartPos = redundantPosterUrl.indexOf("0", 8);
                         String imagePosterUrl = redundantPosterUrl.substring(actualPosterUrlStartPos + 3);
-                        String redundantBackdropUrl = m.getPosterPath();
+                        String redundantBackdropUrl = m.getBackdropPath();
                         int actualBackdropUrlStartPos = redundantBackdropUrl.indexOf("0", 8);
                         String imageBackdropUrl = redundantBackdropUrl.substring(actualBackdropUrlStartPos + 3);
                         db.collection("movies").document(String.valueOf(m.getMovieId()))

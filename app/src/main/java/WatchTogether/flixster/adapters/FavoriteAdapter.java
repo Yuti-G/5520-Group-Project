@@ -55,12 +55,7 @@ public class FavoriteAdapter extends Adapter<FavoriteAdapter.ViewHolder>{
         // Recycler view with the list items
         Movie movie = favorite_list.get(position);
         // if phone is in landscape
-        String imageUrl;
-        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            imageUrl = movie.getBackdropPath();
-        }else{
-            imageUrl = movie.getPosterPath();
-        }
+        String imageUrl = movie.getPosterPath();
         Glide.with(context).load(imageUrl).into(holder.imageView);
     }
 
