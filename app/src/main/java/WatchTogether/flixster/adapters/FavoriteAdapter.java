@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.bumptech.glide.Glide;
 
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,7 +54,13 @@ public class FavoriteAdapter extends Adapter<FavoriteAdapter.ViewHolder>{
         // Set the text of each item of
         // Recycler view with the list items
         Movie movie = favorite_list.get(position);
-        String imageUrl = movie.getPosterPath();
+        // if phone is in landscape
+        String imageUrl;
+        if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            imageUrl = movie.getBackdropPath();
+        }else{
+            imageUrl = movie.getPosterPath();
+        }
         Glide.with(context).load(imageUrl).into(holder.imageView);
     }
 

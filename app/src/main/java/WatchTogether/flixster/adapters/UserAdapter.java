@@ -201,7 +201,8 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 String fromToken = (String) documentSnapshot.get("token");
-                                User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null, fromToken);                                Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString(), false);
+                                User inviteFrom = new User(mAuth.getUid(), mAuth.getCurrentUser().getEmail(), null, fromToken);
+                                Invitation invitation = new Invitation(movie.getMovieId(), tvDateTime.getText().toString(), tvLocation.getText().toString(), movie, inviteFrom, inviteTo, tvMessage.getText().toString(), false);
                                 db.collection("users").document(inviteTo.getName())
                                         .update("invitations", FieldValue.arrayUnion(invitation))
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -250,49 +251,6 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
             }
         });
 
-
-
-
-
-//        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-//        //List<Movie> movies = new ArrayListAccumulator<>();
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int i, Headers headers, JSON json) {
-//
-//                Log.d(TAG, "onSuccess");
-//                JSONObject jsonObject = json.jsonObject;
-//                try {
-//                    JSONArray results = jsonObject.getJSONArray("results");
-//                    Log.i(TAG, "Results: " + results.toString());
-//                    // TODO: change the movie to the current movie
-//                    //movies.addAll(Movie.fromJsonArray(results));
-//                    Movie movie = DetailActivity.getMovie();
-//
-//                    tvTitle.setText(movie.getTitle());
-//                    tvOverview.setText(movie.getOverview());
-//                    String imageUrl = movie.getPosterPath();
-//                    // then imgageURL = backdrop image, else = poster image
-//                    Glide.with(context).load(imageUrl).into(ivPoster);
-//                    tvOverview.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            //2. navigate to a new activity on tap
-//                            Intent i = new Intent(context, DetailActivity.class);
-//                            i.putExtra("movie", Parcels.wrap(movie));
-//                            context.startActivity(i);
-//                        }
-//                    });
-//                } catch (JSONException e) {
-//                    Log.e(TAG, "Hit json exception", e);
-//                }
-//            }
-//            @Override
-//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-//                Log.d(TAG, "onFail");
-//            }
-//        });
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
@@ -348,7 +306,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         JSONObject jNotification = new JSONObject();
         JSONObject jdata = new JSONObject();
         try {
-            jNotification.put("title", "You got an New Invitation!");
+            jNotification.put("title", "You got a New Invitation!");
             jNotification.put("body", fromUsername + "invite you to watch together!");
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
