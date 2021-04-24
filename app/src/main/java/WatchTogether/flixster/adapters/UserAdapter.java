@@ -222,6 +222,14 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
 
                                             }
                                         });
+                                db.collection("users").document(inviteFrom.getName())
+                                        .update("invitations", FieldValue.arrayUnion(invitation))
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                                            }
+                                        });
 
 
                                 dialog.cancel();

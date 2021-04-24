@@ -172,6 +172,10 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                 holder.container.setBackgroundResource(R.drawable.bg_red);
             }
         }
+        if (invitation.getInviteFrom().getName().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+            holder.btnAccept.setVisibility(View.GONE);
+            holder.btnDecline.setVisibility(View.GONE);
+        }
         holder.btnAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,6 +211,34 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                                                 sendMessageToDevice(fromToken, toUsername, "accepted");
                                             }
                                         }).start();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+                    }
+                });
+                db.collection("users").document(invitation.getInviteFrom().getName()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ArrayList<HashMap> invitationMapList = (ArrayList) documentSnapshot.get("invitations");
+                        for (int i = 0; i < invitationMapList.size(); i++) {
+                            HashMap invitationMap = invitationMapList.get(i);
+                            long invitationId = (long) invitationMap.get("invitationId");
+                            String dateTime = (String) invitationMap.get("dateTime");
+                            if (invitationId == invitation.getInvitationId() && dateTime.equals(invitation.getDateTime())) {
+                                invitationMapList.get(i).put("acceptedStatus", true);
+                            }
+                        }
+                        db.collection("users").document(invitation.getInviteFrom().getName())
+                                .update("invitations", invitationMapList)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "InviteTo DocumentSnapshot successfully updated!");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
@@ -254,6 +286,34 @@ public class InvitationDetailAdapter extends Adapter<InvitationDetailAdapter.Vie
                                                 sendMessageToDevice(fromToken, toUsername, "declined");
                                             }
                                         }).start();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error updating document", e);
+                                    }
+                                });
+                    }
+                });
+                db.collection("users").document(invitation.getInviteFrom().getName()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ArrayList<HashMap> invitationMapList = (ArrayList) documentSnapshot.get("invitations");
+                        for (int i = 0; i < invitationMapList.size(); i++) {
+                            HashMap invitationMap = invitationMapList.get(i);
+                            long invitationId = (long) invitationMap.get("invitationId");
+                            String dateTime = (String) invitationMap.get("dateTime");
+                            if (invitationId == invitation.getInvitationId() && dateTime.equals(invitation.getDateTime())) {
+                                invitationMapList.get(i).put("acceptedStatus", false);
+                            }
+                        }
+                        db.collection("users").document(invitation.getInviteFrom().getName())
+                                .update("invitations", invitationMapList)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "InviteTo DocumentSnapshot successfully updated!");
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {

@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.codepath.yutinggan.flixster.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,6 +38,7 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
     Context context;
     View.OnClickListener onClickListener;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
 
@@ -72,17 +74,26 @@ public class InvitationAdapter extends Adapter<InvitationAdapter.ViewHolder>{
         // Set the text of each item of
         // Recycler view with the list items
         Invitation invitation = invitation_list.get(position);
-        String text;
-        if (invitation.getMovie() != null)
-            text = "invites you to watch" + invitation.getMovie().getTitle() + " together!!!";
+        String text, inviteFromUserId, inviteToUserId;
+        StorageReference fileRef = null;
+        if (invitation.getMovie() != null) {
+            if (invitation.getInviteFrom().getName().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                // get inviteTo user's icon and attach image to imageView
+                inviteToUserId = invitation.getInviteTo().getUserId();
+                Log.d(TAG, "get invited To " + inviteToUserId);
+                fileRef = firebaseStorage.getReference().child(inviteToUserId + ".jpeg");
+                text = "is invited by you to watch " + invitation.getMovie().getTitle() + " together!!!";
+            } else {
+                // get inviteFrom user's icon and attach image to imageView
+                inviteFromUserId = invitation.getInviteFrom().getUserId();
+                Log.d(TAG, "get invited from " + inviteFromUserId);
+                fileRef = firebaseStorage.getReference().child(inviteFromUserId + ".jpeg");
+                text = "invites you to watch " + invitation.getMovie().getTitle() + " together!!!";
+            }
+        }
         else
             text = "invites you to watch xxx together!";
         holder.textView.setText(text);
-
-        // get inviteFrom user's icon and attach image to imageView
-        String  inviteFromUserId = invitation.getInviteFrom().getUserId();
-        Log.d(TAG, "get invited from " + inviteFromUserId);
-        StorageReference fileRef = firebaseStorage.getReference().child(inviteFromUserId + ".jpeg");
 
         fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override

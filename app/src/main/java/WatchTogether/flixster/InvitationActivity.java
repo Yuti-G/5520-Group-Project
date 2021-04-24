@@ -57,47 +57,6 @@ public class InvitationActivity extends AppCompatActivity {
         rvInvitationDetails.setAdapter(invitationDetailAdapter);
 
         AddItemsToInvitationList();
-//        String NON_PLAYING_URL = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
-//        List<Movie> movies = new ArrayListAccumulator<>();
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        client.get(NON_PLAYING_URL, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int i, Headers headers, JSON json) {
-//
-//                Log.d(TAG, "onSuccess");
-//                JSONObject jsonObject = json.jsonObject;
-//                try {
-//                    JSONArray results = jsonObject.getJSONArray("results");
-//                    Log.i(TAG, "Results: " + results.toString());
-//                    movies.addAll(Movie.fromJsonArray(results));
-//                    Invitation i1 = new Invitation(1, "2021-04-14 05:24", "online", movies.get(0),
-//                            new User("1", "Ann", null),
-//                            new User("2", "Bob", null),
-//                            "Let's watch together");
-//                    i1.accept();
-//                    invitationList.add(i1);
-//                    invitationList.add(new Invitation(2, "2021-04-16 05:24", "online", movies.get(1),
-//                            new User("1", "Ann", null),
-//                            new User("2", "Bob", null),
-//                            "Let's watch together"));
-//                    invitationList.add(new Invitation(3, "2021-04-16 05:24", "online", movies.get(2),
-//                            new User("1", "Ann", null),
-//                            new User("2", "Bob", null),
-//                            "Let's watch together"));
-//                    invitationList.add(new Invitation(4, "2021-04-16 05:24", "online", movies.get(3),
-//                            new User("1", "Ann", null),
-//                            new User("2", "Bob", null),
-//                            "Let's watch together"));
-//                    invitationDetailAdapter.notifyDataSetChanged();
-//                } catch (JSONException e) {
-//                    Log.e(TAG, "Hit json exception", e);
-//                }
-//            }
-//            @Override
-//            public void onFailure(int i, Headers headers, String s, Throwable throwable) {
-//                Log.d(TAG, "onFail");
-//            }
-//        });
     }
 
     // Function to add items in RecyclerView.
