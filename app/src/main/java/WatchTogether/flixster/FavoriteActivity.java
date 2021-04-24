@@ -47,6 +47,7 @@ public class FavoriteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setTitle("Favorite Movies");
         setContentView(R.layout.activity_favorite);
         load = false;
         RecyclerView rvFavoriteMovies = findViewById(R.id.rv_favorite_movie);

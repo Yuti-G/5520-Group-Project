@@ -45,6 +45,7 @@ public class InvitationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setTitle("Invitations");
         setContentView(R.layout.activity_invitation);
         Log.d(TAG,"Starting invitation detail");
         RecyclerView rvInvitationDetails = findViewById(R.id.rv_invitations_detail);

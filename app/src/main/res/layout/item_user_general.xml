@@ -11,7 +11,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/roundCardView"
         android:layout_width="40dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
@@ -32,11 +32,11 @@
         android:id="@+id/tv_user_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="-8dp"
         android:layout_toEndOf="@+id/roundCardView"
         android:text="UserID"
-        android:textSize="20sp" />
+        android:layout_centerVertical="true"
+        android:textSize="14sp" />
 </RelativeLayout>

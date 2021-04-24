@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     ImageView imgProfile;
 
-    TextView userID, followers, following;
+    TextView userID;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -92,10 +92,6 @@ public class ProfileActivity extends AppCompatActivity {
         userID = (TextView) findViewById(R.id.profile_id);
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         userID.setText(email.split("@")[0]);
-        followers = (TextView) findViewById(R.id.followers_num);
-        //followers.setText();
-        following = (TextView) findViewById(R.id.following_num);
-        //following.setText();
 
         imgProfile = (ImageView) findViewById(R.id.iv_profile);
         loadProfileDefault();
