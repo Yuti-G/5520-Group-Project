@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/invitation_send_container"
+    android:layout_width="400dp"
+    android:layout_height="250dp"
+    android:layout_margin="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/round_from"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="3dp"
+        android:elevation="0dp"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_invitation_from"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_account_circle_black_48" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tv_user_id_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="what"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/round_from"
+        app:layout_constraintStart_toEndOf="@+id/round_from"
+        app:layout_constraintTop_toTopOf="@+id/round_from" />
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:src="@mipmap/ic_arrow"
+        app:layout_constraintBottom_toBottomOf="@+id/round_from"
+        app:layout_constraintStart_toEndOf="@+id/tv_user_id_from"
+        app:layout_constraintTop_toTopOf="@+id/round_from" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/round_to"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:elevation="0dp"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/round_from"
+        app:layout_constraintStart_toEndOf="@id/arrow"
+        app:layout_constraintTop_toTopOf="@+id/round_from">
+
+        <ImageView
+            android:id="@+id/iv_invitation_to"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_account_circle_black_48" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tv_user_id_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="15dp"
+        android:text="UserID"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/round_from"
+        app:layout_constraintStart_toEndOf="@+id/round_to"
+        app:layout_constraintTop_toTopOf="@+id/round_from" />
+
+    <ImageView
+        android:id="@+id/iv_invitation_poster"
+        android:layout_width="128dp"
+        android:layout_height="187dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/round_from"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tv_movie_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/ivPoster"
+        android:text="Movie"
+        android:textSize="24sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Demon Slayer: Mugen Train" />
+
+    <TextView
+        android:id="@+id/tvOverview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/tvTitle"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="131dp"
+        android:layout_toEndOf="@+id/ivPoster"
+        android:ellipsize="end"
+        android:maxLines="6"
+        android:text="TextView"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_datetime"
+        tools:text="&quot;Tanjirō Kamado, joined with Inosuke Hashibira, a boy raised by boars who wears a boar's head, and Zenitsu Agatsuma, a scared boy who reveals his true power when he sleeps, boards the Infinity Train on a new mission with the Fire Hashira, Kyōjurō Rengoku, to defeat a demon who has been tormenting the people and killing the demon slayers who oppose it!&quot;" />
+
+    <TextView
+        android:id="@+id/label_datetime"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="3dp"
+        android:text="Time: "
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        app:layout_constraintStart_toEndOf="@+id/iv_invitation_poster"
+        app:layout_constraintTop_toTopOf="@+id/iv_invitation_poster" />
+
+    <EditText
+        android:id="@+id/text_datetime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:inputType="none"
+        android:text="yyyy-mm-dd hh:mm"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/label_datetime"
+        app:layout_constraintTop_toTopOf="@+id/label_datetime" />
+
+    <Button
+        android:id="@+id/btn_datetime"
+        android:layout_width="81dp"
+        android:layout_height="35dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="SELECT"
+        android:textSize="10dp"
+        app:layout_constraintStart_toEndOf="@+id/text_datetime"
+        app:layout_constraintTop_toTopOf="@+id/text_datetime" />
+
+    <TextView
+        android:id="@+id/label_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="Location:"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        app:layout_constraintStart_toStartOf="@+id/label_datetime"
+        app:layout_constraintTop_toBottomOf="@+id/label_datetime" />
+
+    <EditText
+        android:id="@+id/text_location"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:maxLines="1"
+        android:text="Online"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/label_location"
+        app:layout_constraintStart_toEndOf="@id/label_location"
+        app:layout_constraintTop_toTopOf="@+id/label_location" />
+
+    <EditText
+        android:id="@+id/text_message"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/border_grey"
+        android:gravity="top|left"
+        android:hint="Message"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:overScrollMode="always"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintStart_toEndOf="@+id/iv_invitation_poster"
+        app:layout_constraintTop_toBottomOf="@+id/text_location"
+        app:layout_constraintVertical_bias="0.317" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -384,8 +385,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
                 public void run() {
                     Log.e(TAG, "run: " + resp);
                     // Toast.makeText(MainActivity.this,resp,Toast.LENGTH_LONG).show();
-                    showToast(resp);
-                    // a: 持续在detail页面, 同时b reinstall app导致token改变, resp就fail了, 要重新进入detail页面
+                    // showToast(resp);
                     showToast("invitation send successfully");
                 }
             });
