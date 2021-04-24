@@ -45,6 +45,17 @@
         app:layout_constraintTop_toBottomOf="@+id/roundCardView"
         app:layout_constraintVertical_bias="0.38" />
 
+
+    <TextView
+        android:id="@+id/tvSignOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="12"
+        android:text="Logout"
+        android:textColor="@color/design_default_color_primary"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="@+id/rv_invitations_general" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_invitations_general"
         android:layout_width="0dp"
@@ -82,6 +93,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ic_invitation" />
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"

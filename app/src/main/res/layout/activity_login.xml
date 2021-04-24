@@ -85,7 +85,7 @@
       app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
   <TextView
-      android:id="@+id/tvSignup"
+      android:id="@+id/tvSignOut"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginBottom="64dp"

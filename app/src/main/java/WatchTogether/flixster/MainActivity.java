@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // this.setTitle("All Movies");
         setContentView(R.layout.activity_main);
         RecyclerView rvMovies = findViewById(R.id.rvMovies);
         movies = new ArrayListAccumulator<>();
@@ -184,17 +185,6 @@ public class MainActivity extends AppCompatActivity {
 //        Toast.makeText(MainActivity.this, "Signed in with " + email,
 //                Toast.LENGTH_SHORT).show();
 
-        findViewById(R.id.sign_out_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-                Log.v(TAG, Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(getApplicationContext(), "Successfully Signed Out",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
 
         findViewById(R.id.profile_button).setOnClickListener(new View.OnClickListener() {
             @Override

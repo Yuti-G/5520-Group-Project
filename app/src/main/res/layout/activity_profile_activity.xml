@@ -58,6 +58,18 @@
         app:layout_constraintStart_toStartOf="@+id/view_invitations"
         app:layout_constraintTop_toTopOf="@+id/view_invitations" />
 
+    <TextView
+        android:id="@+id/tvSignOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="12"
+        android:text="Logout"
+        android:textColor="@color/design_default_color_primary"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.87"
+        app:layout_constraintStart_toEndOf="@+id/ic_camera" />
+
     <View
         android:id="@+id/view_invitations"
         android:layout_width="0dp"

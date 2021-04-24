@@ -80,6 +80,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    Uri meUri, toUri;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -90,6 +91,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
             imageView = (ImageView)view.findViewById(R.id.iv_user);
             textView = (TextView)view.findViewById(R.id.tv_user_id);
             container = (RelativeLayout)view.findViewById(R.id.user_container);
+
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -120,7 +122,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         User user = usersList.get(position);
         holder.textView.setText(user.getName());
 
-        // get user icon and attach image to imageView
+        // TODO: get user icon and attach image to imageView
         String  userId = user.getUserId();
         Log.d(TAG, "userId " + userId);
         StorageReference fileRef = firebaseStorage.getReference().child(userId + ".jpeg");
@@ -137,12 +139,11 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
             }
         });
 
-
         holder.container.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                showInviteDialog(user);
+                showInviteDialog(user, fileRef);
             }
         });
     }
@@ -153,12 +154,25 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void showInviteDialog(User inviteTo) {
+    private void showInviteDialog(User inviteTo, StorageReference imgFileRef) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.item_send_invitation, null);
-        ImageView ivInviteFrom = v.findViewById(R.id.iv_invitation_from);
-        TextView tvInviteFrom = v.findViewById(R.id.tv_user_id_from);
+        // ImageView ivInviteFrom = v.findViewById(R.id.iv_invitation_from);
+        // TextView tvInviteFrom = v.findViewById(R.id.tv_user_id_from);
         ImageView ivInviteTo = v.findViewById(R.id.iv_invitation_to);
+        // load invite to img
+        imgFileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.d(TAG, "Image URI:  " + uri);
+                Picasso.get().load(uri).into(ivInviteTo);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Get invite to img fail ");
+            }
+        });
         TextView tvInviteTo = v.findViewById(R.id.tv_user_id_to);
         tvInviteTo.setText(inviteTo.getName().split("@")[0]);
         ImageView ivPoster = v.findViewById(R.id.iv_invitation_poster);
@@ -170,7 +184,7 @@ public class UserAdapter extends Adapter<UserAdapter.ViewHolder> implements Date
         Button btnSelect = v.findViewById(R.id.btn_datetime);
         Movie movie = DetailActivity.getMovie();
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle("Send a new invitation")
+                .setTitle("new invitation")
                 .setView(v)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override

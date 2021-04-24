@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import WatchTogether.flixster.adapters.FavoriteAdapter;
 import WatchTogether.flixster.adapters.InvitationAdapter;
@@ -172,6 +173,19 @@ public class ProfileActivity extends AppCompatActivity {
                 LinearLayoutManager.HORIZONTAL, false);
         rvFavorite.setLayoutManager(HorizontalLayout);
         rvFavorite.setAdapter(favoriteAdapter);
+
+        findViewById(R.id.tvSignOut).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                Log.v(TAG, Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(getApplicationContext(), "Successfully Signed Out",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     // Function to add items in RecyclerView.

@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.tvSignup).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.tvSignOut).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);

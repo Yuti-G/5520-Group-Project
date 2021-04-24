@@ -85,7 +85,7 @@
       app:layout_constraintVertical_bias="0.37" />
 
   <TextView
-      android:id="@+id/tvSignup"
+      android:id="@+id/tvSignOut"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginEnd="16dp"
